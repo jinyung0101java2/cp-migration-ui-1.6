@@ -5,10 +5,6 @@
 <div layout:fragment="content">
     <div id="content" class="sub-page">
         <article class="location">
-            <ul>
-                <li><a onclick="movePage(URI_CP_CONFIGS_CONFIGMAPS)">Configs</a></li>
-                <li><a onclick="movePage(URI_CP_CONFIGS_CONFIGMAPS)">ConfigMaps</a></li>
-            </ul>
         </article>
         <article class="base detail">
             <div class="notice">
@@ -87,9 +83,7 @@
     <script type="text/javascript">
     window.onload = () => {
 
-        func.init(ASIDE_DP1.CONFIGS, ASIDE_DP2.CONFIGMAPS);
-
-        const configMapsDetail = {
+        const migrationsDetail = {
             init(){
 
                 // nameSpace 정보 조회

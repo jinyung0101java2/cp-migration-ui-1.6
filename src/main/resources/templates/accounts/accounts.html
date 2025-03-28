@@ -6,18 +6,17 @@
 <div layout:fragment="content">
     <div id="content" class="sub-page">
         <article class="location">
-            <ul>
-                <li><a onclick="movePage(URI_CP_MIGRATIONS_LIST)">Migrations</a></li>
-                <li><a onclick="movePage(URI_CP_ACCOUNTS_LIST)">Accounts</a></li>
-            </ul>
-            <!-- Click event class="on" -->
             <fieldset>
                 <input type="text" name="keyword" id="searchText" autocomplete="off" th:placeholder="#{M0017}" />
                 <button type="submit" id="search" th:text="#{M0031}"></button>
             </fieldset>
         </article>
-        <article class="base">
-            <div class="notice">
+        <article class="base tab-cont-wrap">
+            <ul class="tab-btn">
+                <li type="notice-migrations" id="tab-migrations"><a onclick="movePage(URI_CP_MIGRATIONS_LIST)">Migrations</a></li>
+                <li type="notice-accounts" id="tab-accounts" class="active"><a href="javascript:">Accounts</a></li>
+            </ul>
+            <div class="notice tab-cont-wrap">
                     <h3>List</h3>
                     <!-- User -->
                     <div class="table_style01">
@@ -52,7 +51,6 @@
     <script type="text/javascript">
     window.onload = () => {
 
-        func.init(ASIDE_DP1.MIGRATIONS, ASIDE_DP2.ACCOUNTS);
         callbackFuncNameLoad();
 
         const resource = {

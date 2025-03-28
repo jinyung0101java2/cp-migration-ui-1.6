@@ -6,10 +6,6 @@
 <div layout:fragment="content">
     <div id="content" class="sub-page clusters">
         <article class="location">
-            <ul>
-                <li><a onclick="movePage(URI_CP_MIGRATIONS_LIST)">Migrations</a></li>
-                <li><a onclick="movePage(URI_CP_MIGRATIONS_LIST)">Migrations</a></li>
-            </ul>
         </article>
         <article class="base">
             <div class="creat" style="overflow: auto">
@@ -75,9 +71,7 @@
     <script type="text/javascript">
         window.onload = () => {
 
-            func.init(ASIDE_DP1.MIGRATIONS, ASIDE_DP2.MIGRATIONS);
-
-            const accounts = {
+            const migrationsCreate = {
                 init() {
 
                     // provider 정보 조회
@@ -101,7 +95,7 @@
                 event() {
                     document.getElementById('sync').addEventListener('click', (e) => {
                         alert("sync")
-                        let accounts =  {
+                        let migrationsCreate =  {
                             "src": {
                                 "storageType": "s3",
                                 "endpoint": "http://115.68.198.175:9000",
@@ -116,7 +110,7 @@
                             }
                         }
 
-                        func.saveData('POST', `https://mig.115.68.198.189.nip.io/v1/migration/sync/sync`, JSON.stringify(accounts), true, 'application/json');
+                        func.saveData('POST', `https://mig.115.68.198.189.nip.io/v1/migration/sync/sync`, JSON.stringify(migrationsCreate), true, 'application/json');
 
                     }, true);
 
@@ -186,7 +180,7 @@
                     };
 
                     //check FILE
-                    func.saveData('POST', `${func.url}clusters/${sessionStorage.getItem('cluster')}/keys`, JSON.stringify(createName), true, 'application/json', createSshKeys.saveComp);
+                    func.saveData('POST', `${func.url}clusters/${sessionStorage.getItem('cluster')}/keys`, JSON.stringify(createName), true, 'application/json', migrationsCreate.saveComp);
                     //FIXME!!, 확인 버튼 클릭 전 이동하는 이슈
                 },
 
@@ -196,7 +190,7 @@
 
 
             };
-            accounts.init();
+            migrationsCreate.init();
         }
     </script>
 </th:block>

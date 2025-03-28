@@ -6,10 +6,6 @@
 <div layout:fragment="content">
     <div id="content" class="sub-page clusters">
         <article class="location">
-            <ul>
-                <li><a onclick="movePage(URI_CP_MIGRATIONS_LIST)">Migrations</a></li>
-                <li><a onclick="movePage(URI_CP_ACCOUNTS_LIST)">Accounts</a></li>
-            </ul>
         </article>
         <article class="base">
             <div class="creat">
@@ -67,7 +63,7 @@
             </div>
             <!-- btn -->
             <div class="btn02">
-                <button onclick="movePage(URI_CP_GLOBAL_CLOUD_ACCOUNTS);" th:text="#{M0028}"></button>
+                <button onclick="movePage(URI_CP_ACCOUNTS_LIST);" th:text="#{M0028}"></button>
                 <div>
                     <button type="submit" id="save" th:text="#{M0030}"></button>
                 </div>
@@ -83,15 +79,11 @@
 
         window.onload = () => {
 
-            IS_GLOBAL = true;
-            func.init(ASIDE_DP1.MIGRATIONS, ASIDE_DP2.ACCOUNTS);
-
-
-            const createCloudAccounts = {
+            const accountsCreate = {
                 init() {
 
                     // provider 정보 조회
-                    func.loadData('GET', `${func.url}accounts/provider/info`, 'application/json', createCloudAccounts.draw);
+                    func.loadData('GET', `${func.url}accounts/provider/info`, 'application/json', accountsCreate.draw);
 
                 },
 
@@ -106,12 +98,12 @@
                     func.appendHtml(document.getElementById('provider'), html, 'select');
                     document.getElementById('provider').selectedIndex = "0";
 
-                    createCloudAccounts.event();
+                    accountsCreate.event();
                 },
 
                 event() {
                     document.getElementById('save').addEventListener('click', () => {
-                        func.alertPopup('SAVE', MSG_CHECK_TO_SAVE, true, MSG_CONFIRM, createCloudAccounts.save);
+                        func.alertPopup('SAVE', MSG_CHECK_TO_SAVE, true, MSG_CONFIRM, accountsCreate.save);
                     }, false);
                     changeProviderSelect();
                 },
@@ -187,7 +179,7 @@
 
                     }
                     //check FILE
-                    func.saveData('POST', `${func.url}accounts`, JSON.stringify(createName), true, 'application/json', createCloudAccounts.saveComp);
+                    func.saveData('POST', `${func.url}accounts`, JSON.stringify(createName), true, 'application/json', accountsCreate.saveComp);
 
                 },
 
@@ -195,7 +187,7 @@
                     func.historyBack();
                 }
             };
-            createCloudAccounts.init();
+            accountsCreate.init();
         };
         function changeProviderSelect() {
             func.removeHtml(document.getElementById('providerInfo'));

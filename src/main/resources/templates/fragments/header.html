@@ -3,13 +3,15 @@
 
 <header th:fragment="headerFragment">
     <div>
-        <!-- logo -->
-        <h1>
-            <a onclick="movePage(URI_CP_BASE_URL)"><img src="/img/logo.png" alt="K-PaaS- Logo"/></a>
-        </h1>
+
         <!-- menu -->
         <div>
+            <!-- logo -->
+            <h1>
+                <a onclick="movePage(URI_CP_BASE_URL)"><img src="/img/logo.png" alt="K-PaaS- Logo"/></a>
+            </h1>
             <div id="headerSubDiv">
+
                 <div id="localeLangDiv">
                     <fieldset>
                         <select name="u_locale_lang" id="u_locale_lang" onchange="changeLocaleLanguage()">
@@ -17,13 +19,6 @@
                             <option value="en">English</option>
                         </select>
                     </fieldset>
-                </div>
-                <div class="guideButtonDiv">
-                    <div class="guideButtonSelect">
-                        <i  class="fa-brands fa-github guideButtonI"></i>
-                        <ul class="guideList scroll02" id="guideListUl" style="top:40px !important;">
-                        </ul>
-                    </div>
                 </div>
                 <a href="javascript:;" id="logout" th:text="#{M0809}"></a>
             </div>
