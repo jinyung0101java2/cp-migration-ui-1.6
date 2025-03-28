@@ -53,37 +53,37 @@
 
         callbackFuncNameLoad();
 
-        const resource = {
+        const migrations = {
             offset : 0, // 로드 페이지 넘버
             limit : 10, // 로드 게시물 개수
             allItemCount : 0, //게시물 촐 개수
             type : 'administrator',
 
             init(){
-                func.nameLoad = resource.reset;
+                func.nameLoad = migrations.reset;
 
-                resource.load();
+                migrations.load();
 
-                resource.event();
+                migrations.event();
             },
 
             reset(){
                 func.removeHtml(document.querySelector('.listTable'));
 
-                resource.offset = 0;
+                migrations.offset = 0;
 
-                resource.load();
+                migrations.load();
             },
 
             load(){
                 func.loading();
 
                 // nameSpace 정보 조회
-                func.loadData('GET', `${func.url}clusters/${sessionStorage.getItem('cluster')}/namespaces/${sessionStorage.getItem('nameSpace')}/configMaps?searchName=${document.getElementById('searchText').value}&limit=${resource.limit}&offset=${resource.offset}`, 'application/json', resource.draw);
+                func.loadData('GET', `${func.url}clusters/${sessionStorage.getItem('cluster')}/namespaces/${sessionStorage.getItem('nameSpace')}/configMaps?searchName=${document.getElementById('searchText').value}&limit=${migrations.limit}&offset=${migrations.offset}`, 'application/json', migrations.draw);
             },
 
             draw(data){
-                if(resource.offset == 0) resource.allItemCount = data.itemMetaData.allItemCount;
+                if(migrations.offset == 0) migrations.allItemCount = data.itemMetaData.allItemCount;
 
                 if(data.httpStatusCode == 200){
                     if(data.items.length > 0){
@@ -104,7 +104,7 @@
                 };
 
                 // more 버튼 활성, 비활성
-                if(document.querySelector('.listTable').querySelectorAll('tr').length < resource.allItemCount){
+                if(document.querySelector('.listTable').querySelectorAll('tr').length < migrations.allItemCount){
                     document.querySelector('.more').classList.toggle('on', true);
                 } else {
                     document.querySelector('.more').classList.toggle('on', false);
@@ -114,16 +114,16 @@
                     document.getElementById('wrap').removeChild(document.getElementById('loading'));
                 };
 
-                resource.listEvent();
+                migrations.listEvent();
             },
 
             event(){
                 // more 버튼 event
                 document.querySelector('.more').addEventListener('click', (e) => {
-                    if(document.querySelector('.listTable').querySelectorAll('tr').length < resource.allItemCount){
-                    resource.offset++;
+                    if(document.querySelector('.listTable').querySelectorAll('tr').length < migrations.allItemCount){
+                    migrations.offset++;
 
-                    resource.load();
+                    migrations.load();
                 };
             }, false);
 
@@ -135,7 +135,7 @@
             listEvent(){
                 var listAll = document.querySelector('.listTable').querySelectorAll('a');
 
-                for(var i=resource.offset*10; i<=listAll.length-1; i++){
+                for(var i=migrations.offset*10; i<=listAll.length-1; i++){
                     listAll[i].addEventListener('click', (e) => {
                         sessionStorage.setItem('commonName', e.target.getAttribute('data-name'));
                     sessionStorage.setItem('nameSpace', e.target.getAttribute('data-spac'));
@@ -146,7 +146,7 @@
             },
         }
 
-        resource.init();
+        migrations.init();
     }
 </script>
 </th:block>
