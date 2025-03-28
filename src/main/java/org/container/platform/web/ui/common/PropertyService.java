@@ -18,9 +18,6 @@ public class PropertyService {
     @Value("${cpApi.url}")
     private String cpApiUrl;
 
-    @Value("${private.repository.url}")
-    private String privateRepositoryUrl;
-
     @Value("${keycloak.oauth.client.superAdminRole}")
     private String keycloakSuperAdminRole;
 

@@ -8,7 +8,7 @@ spring:
     template-loader-path: classpath:/templates/
 
 server:
-  port: ${PORT:8090}
+  port: ${PORT:8092}
   servlet:
     session:
       cookie:
@@ -28,10 +28,6 @@ logging:
   path: classpath:logback-spring.xml
   file: logs/application.log
 
-private:
-  repository:
-    url: ${REPOSITORY_URL}
-
 keycloak:
   oauth:
     info:
@@ -50,22 +46,6 @@ keycloak:
       secret: ${KEYCLOAK_CP_CLIENT_SECRET}
       scope:
       superAdminRole: cp-cluster-admin-role
-
-guide:
-  url: https://github.com/K-PaaS/container-platform/tree/master/use-guide/portal/
-  url-eng: https://github.com/K-PaaS/cp-guide-eng/tree/master/use-guide/portal/
-  url-playpark: https://github.com/K-PaaS/container-platform/blob/playpark/use-guide/portal/container-platform-portal-deploy-guide.md#
-  name: cp-portal-use-guide-{}.md
-
-catalog:
-  default:
-    repo:
-      url: ${CHART_REPO_URL}
-      name: ${CHART_REPO_NAME}
-      username: ${CHART_REPO_USERNAME}
-      password: ${CHART_REPO_PASSWORD}
-      cert: ${CHART_REPO_CRT} # base64 encoded certificate
-
 ---
 spring:
   config:
