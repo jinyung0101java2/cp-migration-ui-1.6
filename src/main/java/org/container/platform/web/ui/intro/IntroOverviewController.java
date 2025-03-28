@@ -47,16 +47,5 @@ public class IntroOverviewController {
         return "index";
     }
 
-
-    /**
-     * Index 페이지 이동(Move Intro overview page)
-     *
-     * @return the intro overview
-     */
-    @ApiOperation(value = "Intro overview 페이지 이동(Move Intro overview page)", nickname = "getIntroOverview")
-    @GetMapping(value = ConstantsUrl.URI_CP_INDEX_URL)
-    public String getIntroOverview() {
-        return "index";
-    }
 }
 
