@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+
+<div layout:fragment="content">
+    <div id="content" class="sub-page clusters">
+        <article class="location">
+            <ul>
+                <li><a onclick="movePage(URI_CP_CATALOG_REPOSITORIES)">Catalogs</a></li>
+                <li><a onclick="movePage(URI_CP_CATALOG_RELEASES)">Releases</a></li>
+            </ul>
+        </article>
+        <article class="base detail tab-cont-wrap">
+            <div class="notice">
+                <h4>Details</h4>
+                <div class="table_style01">
+                    <table>
+                        <caption>Details</caption>
+                        <colgroup >
+                            <col width="20%" />
+                            <col width="80%" />
+                        </colgroup>
+                        <tbody class="listTable">
+                        <tr>
+                            <th scope="row" class="left">Name</th>
+                            <td class="left" id="name"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="left">Namespace</th>
+                            <td class="left" id="namespace"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="left">Status</th>
+                            <td class="left" id="status"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="left">Home</th>
+                            <td class="left" id="home"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="left">Revision</th>
+                            <td class="left" id="revision"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="left">Chart</th>
+                            <td class="box left" id="chart"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="left">App Version</th>
+                            <td class="box left" id="app_version"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="left">Updated</th>
+                            <td class="left box" id="updated"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                    <h4>Histories</h4>
+                    <div class="table_style01" style="max-height: 350px; overflow: auto; scrollbar-width: thin;">
+                        <table>
+                            <caption>Histories</caption>
+                            <colgroup >
+                                <col width="10%" />
+                                <col width="15%" />
+                                <col width="20%" />
+                                <col width="15%" />
+                                <col width="20%" />
+                                <col width="20%" />
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th scope="col">Revision</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Chart</th>
+                                <th scope="col">App Version</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Updated</th>
+
+                            </tr>
+                            </thead>
+                            <tbody class="historiesList">
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    <ul class="tab-btn2" style="margin-top:30px;">
+                        <!-- 활성화시 active 클래스 추가 -->
+                        <li data-id="resources-status"><a href="javascript:" >Resources Status</a></li>
+                        <li data-id="manifests"><a href="javascript:" >Manifests</a></li>
+                        <li data-id="values"><a href="javascript:">Values</a></li>
+                        <li data-id="notes"><a href="javascript:">Notes</a></li>
+                    </ul>
+                    <div class="creat tab-content" style="padding:10px 0px;">
+                        <!-- Resources -->
+                        <div style="width:100%; height: 600px;">
+                          <textarea id="values" class="codemirror-textarea"></textarea>
+                      </div>
+                    </div>
+                <div class="btn02">
+                    <button type="submit" id="delete_btn" th:text="#{M0860}"></button>
+                    <div>
+                        <button id="rollback_btn" th:text="#{M0862}"></button>
+                        <button id="upgrade_btn" th:text="#{M0861}" style="margin-right: 6px;"></button>
+                        <button onclick="movePage(URI_CP_CATALOG_RELEASES)" th:text="#{M0028}"></button>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+        window.onload = () => {
+            func.init(ASIDE_DP1.CATALOGS, ASIDE_DP2.CATALOG_RELEASES);
+            let editor, revision_opts, revision_target_index, mergeView, check_rollback_msg;
+            let collapse = false;
+            let relObj = {};
+            const releases = {
+                name : sessionStorage.getItem('commonName'),
+                resources_status : "",
+                manifests : "",
+                values : "",
+                notes : "",
+                historiesList : [],
+                current_revision: 0,
+                init() {
+                    func.nameLoad = releases.reset;
+                    releases.setTabList();
+                    releases.load();
+                    releases.event();
+                },
+                load() {
+                    //func.loading();
+                    editor = CodeMirror.fromTextArea($(".codemirror-textarea")[0], {
+                        theme: "default",
+                        scrollbarStyle: "simple",
+                        mode: "powershell",
+                        lineNumbers: true,
+                        lineWrapping: true,
+                        readOnly: true,
+                        autoRefresh:true,
+                    }).setSize("100%", "100%");
+
+                    // info
+                    func.loadData('GET', `${func.catalogUrl}/api/clusters/${sessionStorage.getItem('cluster')}/namespaces/${sessionStorage.getItem('nameSpace')}/releases/${releases.name}`, 'application/json', releases.draw);
+                    // resources
+                    func.loadData('GET', `${func.catalogUrl}/api/clusters/${sessionStorage.getItem('cluster')}/namespaces/${sessionStorage.getItem('nameSpace')}/releases/${releases.name}/resources`, 'application/json', releases.resources);
+                    // histories
+                    func.loadData('GET', `${func.catalogUrl}/api/clusters/${sessionStorage.getItem('cluster')}/namespaces/${sessionStorage.getItem('nameSpace')}/releases/${releases.name}/histories`, 'application/json', releases.histories);
+                    },
+
+                draw(data) {
+                    var items = data.items;
+                    // details
+                    document.getElementById('name').innerText = items.name;
+                    document.getElementById('namespace').innerText = items.namespace;
+                    $('#status').addClass(items.status.toLowerCase());
+                    document.getElementById('status').innerText = items.status;
+                    if(items.home.length < 1) {
+                        document.getElementById('home').innerText= '-';}
+                    else {
+                        document.getElementById('home').innerHTML = `<a target="_blank" href="${items.home}">${items.home}</a>`;}
+                    document.getElementById('revision').innerText = items.revision;
+                    document.getElementById('chart').innerHTML = `<dl><dt>${items.chart}-${items.chart_version}</dt></dl>`;
+                    document.getElementById('app_version').innerHTML = `<dl><dt>${items.app_version}</dt></dl>`;
+                    document.getElementById('updated').innerText = items.updated;
+                    releases.current_revision = items.revision;
+                    releases.manifests  = items.manifest;
+                    releases.values = items.values;
+                    releases.notes = items.notes;
+                    relObj = {name: items.name, chart: items.chart, chart_version: items.chart_version, home: items.home}
+                    if(releases.current_revision < 2) {
+                        document.getElementById('rollback_btn').classList.add('btn_bg_none');
+                        document.getElementById('rollback_btn').disabled = true;
+                    }
+                },
+                resources(data){
+                    releases.resources_status = data.items;
+                    document.querySelector('.CodeMirror').CodeMirror.setValue(releases.resources_status);
+                },
+                histories(data){
+                    releases.historiesList = data.items;
+                    let items = data.items;
+                    if(items.length > 0){
+                        let i= 0;
+                        for(i=0; i<items.length; i++){
+                            let html = `<tr>
+								<td class="center">${items[i].revision}</td>
+								<td class="center">${items[i].status}</td>
+								<td class="center">${items[i].chart}</td>
+								<td class="center">${items[i].app_version}</td>
+								<td class="center">${items[i].description}</td>
+								<td class="center">${items[i].updated}</td>
+							</tr>`;
+
+                            if(i>0) {
+                                revision_opts += `<option value="${items[i].revision}" data-index="${i}">${items[i].revision}</option>`;
+                            }
+
+                            func.appendHtml(document.querySelector('.historiesList'), html, 'tbody');
+                        };
+                    } else {
+                        let html = '<tr><td colspan="6">No Data.</td></tr>';
+                        func.appendHtml(document.querySelector('.historiesList'), html, 'tbody');
+                    };
+
+                },
+                event() {
+                    document.getElementById('delete_btn').addEventListener('click', (e) => {
+                        func.alertPopup('UNINSTALL', MSG_CHECK_TO_DELETE, true, MSG_CONFIRM , releases.delete);
+                    }, false);
+
+                    document.getElementById('upgrade_btn').addEventListener('click', (e) => {
+                        sessionStorage.setItem('releaseItem', JSON.stringify(relObj));
+                        document.location.href = URI_CP_CATALOG_RELEASES + URI_CP_UPGRADE;
+                    }, false);
+
+                    document.getElementById('rollback_btn').addEventListener('click', (e) => {
+                       releases.modalRollback();
+                    }, false);
+                },
+
+                reset(){
+                  return false;
+                },
+
+                delete(){
+                    func.saveData('DELETE', `${func.catalogUrl}/api/clusters/${sessionStorage.getItem('cluster')}/namespaces/${sessionStorage.getItem('nameSpace')}/releases/${releases.name}`, '', true, 'application/json', releases.moveReleaseList);
+                },
+                rollback(){
+                    let target_revision = releases.historiesList[revision_target_index].revision;
+                    func.saveData('PUT', `${func.catalogUrl}/api/clusters/${sessionStorage.getItem('cluster')}/namespaces/${sessionStorage.getItem('nameSpace')}/releases/${releases.name}/versions/${target_revision}`, '', true, 'application/json', releases.moveReleaseDetails);
+                },
+                setTabList(){
+                    let tabBtns = document.querySelectorAll('.tab-btn2 li');
+                    tabBtns[0].classList.add('active');
+
+                    for (let i = 0; i < tabBtns.length; i ++) {
+                        (function(idx) {
+                            tabBtns[idx].onclick = function() {
+                                for( let j=0; j<tabBtns.length; j++ ) {
+                                    tabBtns[j].classList.remove('active');
+                                }
+                                tabBtns[idx].classList.add('active');
+                                releases.changeTabValues(tabBtns[idx].getAttribute("data-id"));
+                            };
+                        })(i);
+                    }
+                },
+                changeTabValues(tg){
+                if(tg === "resources-status") {
+                    document.querySelector('.CodeMirror').CodeMirror.setOption("mode","powershell");
+                     document.querySelector('.CodeMirror').CodeMirror.setValue(releases.resources_status);
+                 }
+                 else if(tg === "manifests") {
+                     document.querySelector('.CodeMirror').CodeMirror.setOption("mode","text/x-yaml");
+                     document.querySelector('.CodeMirror').CodeMirror.setValue(releases.manifests);
+                 }
+                 else if(tg === "values") {
+                     document.querySelector('.CodeMirror').CodeMirror.setOption("mode","text/x-yaml");
+                     document.querySelector('.CodeMirror').CodeMirror.setValue(releases.values);
+                 }
+                 else if(tg === "notes") {
+                    document.querySelector('.CodeMirror').CodeMirror.setOption("mode","powershell");
+                     document.querySelector('.CodeMirror').CodeMirror.setValue(releases.notes);
+                 }
+                },
+                initRollbackView(){
+                    let target = document.getElementById("rollback-manifest-diff");
+                    target.innerHTML = "";
+                    mergeView = CodeMirror.MergeView(target, {
+                        origLeft: releases.historiesList[0].manifest, //left
+                        value: releases.historiesList[revision_target_index].manifest,  //right
+                        readOnly: true,
+                        allowEditingOriginals: false,
+                        revertButtons : false,
+                        scrollbarStyle: "simple",
+                        theme: "default",
+                        mode: "text/x-yaml",
+                        highlightDifferences: true,
+                        collapseIdentical: collapse,
+                        lineNumbers: true,
+                        lineWrapping: true,
+                    });
+
+                    resizeMergeView(mergeView, 500);
+                },
+                modalRollback() {
+                    if (releases.historiesList.length > 0) {
+                        if(releases.current_revision < 2) {
+                            func.alertPopup('INFO', MSG_NO_LIST, false, MSG_CLOSE, true);
+                        }
+                        revision_target_index = 1;
+                        check_rollback_msg = `${MSG_REPO_CHART_ROLLBACK} ( revision #${releases.historiesList[0].revision} &#8594 #${releases.historiesList[revision_target_index].revision} )`;
+                        let html = `<div class='modal-wrap' id='modal'><div class='modal wide'><h5>${MSG_REPO_CHART_ROLLBACK}</h5><div class="modal-pane-wrap">`;
+                        html +=  `<div class="modal-pane"><span class="title-label">Current Revision: ${releases.historiesList[0].revision}</span></div>`;
+                        html +=  `<div style="width:6%; height:100%;"></div>`;
+                        html +=  `<div class="modal-pane"><span class="title-label">Rollback Revision:</span> <select id="rollback_revision_sel" class="none">${revision_opts}</select>`;
+                        html += ` <span id="collapse" class="icon-pane"><img id="collapse_img" title="Expand Content" class="expand"/></span></div></div>`;
+                        html +=  `<div id="rollback-manifest-diff" style="width:100%;"></div>`;
+                        html += `<a id="rollback_confirm" class='confirm' href='javascript:;'>${check_rollback_msg}</a>`;
+                        html += `<a class='close' href='javascript:;'>` + MSG_CLOSE + `</a></div></div>`;
+                        func.appendHtml(document.getElementById('wrap'), html, 'div');
+                        document.getElementById("rollback_revision_sel").options.selectedIndex = 0;
+                        releases.initRollbackView();
+
+
+                        document.getElementById('collapse').addEventListener('click', (e) => {
+                            collapse = !collapse;
+                            func.isCollapse('collapse_img', collapse);
+                            releases.initRollbackView();
+                        }, false);
+
+                        document.getElementById('rollback_revision_sel').addEventListener('change', (e) => {
+                            let el = e.target;
+                            revision_target_index =el.options[el.selectedIndex].getAttribute('data-index');
+                            check_rollback_msg = `${MSG_REPO_CHART_ROLLBACK} ( revision #${releases.historiesList[0].revision} &#8594 #${releases.historiesList[revision_target_index].revision} )`;
+                            document.getElementById('rollback_confirm').innerHTML = check_rollback_msg;
+                            releases.initRollbackView();
+                        }, false);
+
+                        document.getElementById('modal').querySelector('.close').addEventListener('click', (e) => {
+                            collapse = false;
+                            document.getElementById('wrap').removeChild(document.getElementById('modal'));
+                        }, false);
+
+
+                        document.getElementById('rollback_confirm').addEventListener('click', (e) => {
+                            func.alertPopup('ROLLBACK', MSG_CHECK_TO_ROLLBACK, true, MSG_CONFIRM , releases.rollback);
+                        }, false);
+                    } else {
+                        func.alertPopup('ERROR', MSG_NO_LIST, false, MSG_CLOSE, true);
+                    }
+                    ;
+                },
+                moveReleaseList() {
+                    movePage(URI_CP_CATALOG_RELEASES);
+                },
+                moveReleaseDetails(){
+                    movePage(URI_CP_CATALOG_RELEASES + URI_CP_DETAILS);
+                }
+            }
+
+            releases.init();
+        }
+    </script>
+
+</th:block>
+</html>

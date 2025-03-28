@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lagn="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<!-- Head -->
+<head>
+    <meta charset="UTF-8"/>
+    <title>K-PaaS Container Platform Portal</title>
+    <link href="/css/c3.min.css" rel="stylesheet" type="text/css"/>
+    <!--<link href="/css/w3.css" rel="stylesheet" type="text/css"/>-->
+    <link href="/css/layout.css?version=0.1" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="/plugins/codemirror-6.65.7/css/codemirror.min.css">
+    <link rel="stylesheet" href="/plugins/codemirror-6.65.7/css/dialog.min.css">
+    <link rel="stylesheet" href="/plugins/codemirror-6.65.7/css/matchesonscrollbar.min.css">
+    <link rel="stylesheet" href="/plugins/codemirror-6.65.7/css/simplescrollbars.min.css">
+    <link rel="stylesheet" href="/plugins/codemirror-6.65.7/css/merge.min.css">
+    <link rel='shortcut icon' type='image/x-icon' href='/img/favicon.ico?v=2'/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" />
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">-->
+     <link rel="stylesheet" href="/plugins/highlight.js-11.9.0/a11y-light.min.css">
+ </head>
+ <!-- // Head -->
+<!-- Body -->
+<body>
+<span th:replace="fragments/config :: configFragment"></span>
+<div id="wrap">
+    <!-- Header -->
+    <header th:replace="fragments/header :: headerFragment"></header>
+    <!-- // Header -->
+
+    <!-- container -->
+    <div id="container">
+        <!-- aside -->
+        <aside th:replace="fragments/aside :: asideFragment"></aside>
+        <!-- // aside -->
+
+        <!-- content -->
+        <div layout:fragment="content"></div>
+        <!-- // Content -->
+    </div>
+    <!-- // container -->
+    <!-- modal -->
+    <div layout:fragment="modal"></div>
+    <!-- // modal -->
+</div>
+<script src="/plugins/highlight.js-11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+<script src="/plugins/codemirror-6.65.7/js/codemirror.min.js"></script>
+<script src="/plugins/codemirror-6.65.7/js/yaml.min.js"></script>
+<script src="/plugins/codemirror-6.65.7/js/powershell.min.js"></script>
+<script src="/plugins/codemirror-6.65.7/js/addon/matchesonscrollbar.min.js"></script>
+<script src="/plugins/codemirror-6.65.7/js/addon/dialog.min.js"></script>
+<script src="/plugins/codemirror-6.65.7/js/addon/searchcursor.min.js"></script>
+<script src="/plugins/codemirror-6.65.7/js/addon/search.min.js"></script>
+<script src="/plugins/codemirror-6.65.7/js/addon/annotatescrollbar.min.js"></script>
+<script src="/plugins/codemirror-6.65.7/js/addon/jump-to-line.min.js"></script>
+<script src="/plugins/codemirror-6.65.7/js/addon/simplescrollbars.min.js"></script>
+<script src="/plugins/codemirror-6.65.7/js/addon/autorefresh.min.js"></script>
+<script src="/plugins/codemirror-6.65.7/js/addon/merge.min.js"></script>
+<script src="/plugins/codemirror-6.65.7/js/addon/diff_match_patch.js"></script>
+<script type="text/javascript" src="/js/d3-5.4.0.min.js"></script>
+<script type="text/javascript" src="/js/c3.min.js"></script>
+<script type="text/javascript" src="/js/common.js" th:inline="javascript"></script>
+<script src="/plugins/jquery/jquery.min.js"></script>
+<th:block layout:fragment="script"></th:block>
+</body>
+<!-- // Body -->
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<div layout:fragment="content">
+    <div id="content" class="sub-page">
+        <article class="location">
+            <ul>
+                <li><a onclick="movePage(URI_CP_CHAOS_EXPERIMENTS)">Chaos</a></li>
+                <li><a onclick="movePage(URI_CP_CHAOS_EVENTS)">Events</a></li>
+            </ul>
+            <!-- Click event class="on" -->
+            <fieldset>
+                <input type="text" name="keyword" id="searchText" autocomplete="off" th:placeholder="#{M0017}" />
+                <button type="submit" id="search" th:text="#{M0031}"></button>
+            </fieldset>
+        </article>
+        <article class="base">
+            <div class="notice">
+                <h3>List</h3>
+                <!-- User -->
+                <div class="table_style01">
+                    <!-- board -->
+                    <table>
+                        <caption>Events List</caption>
+                        <colgroup >
+                            <col width="16%" />
+                            <col width="11%" />
+                            <col width="11%" />
+                            <col width="11%" />
+                            <col width="35%" />
+                            <col width="16%" />
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th scope="col">UUID</th>
+                            <th scope="col">Namespaces</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Kind</th>
+                            <th scope="col">Message</th>
+                            <th scope="col">Event Time</th>
+                        </tr>
+                        </thead>
+                        <tbody class="listTable">
+                        </tbody>
+                    </table>
+                    <!-- more btn -->
+                    <a class="more" href="javascript:;">more</a>
+                </div>
+            </div>
+        </article>
+    </div>
+</div>
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+    window.onload = () => {
+
+        func.init(ASIDE_DP1.CHAOS, ASIDE_DP2.EVENTS);
+        callbackFuncNameLoad();
+
+        const events = {
+            offset : 0, // 로드 페이지 넘버
+            limit : 10, // 로드 게시물 개수
+            allItemCount : 0, //게시물 총 개수
+            searchName : '',
+
+            init(){
+                func.nameLoad = events.reset;
+
+                events.load();
+
+                events.event();
+            },
+
+            reset(){
+                func.removeHtml(document.querySelector('.listTable'));
+
+                events.offset = 0;
+
+                events.load();
+            },
+
+            load(){
+                func.loading();
+                if (sessionStorage.getItem('clusterType') !== 'host') {
+                    func.alertPopup('NOTE', MSG_UNABLE_CHAOS, true, MSG_CLOSE, func.moveToMain);
+                }else {
+                // event 정보 조회
+                func.loadData('GET', `${func.chaosUrl}clusters/${sessionStorage.getItem('cluster')}/namespaces/${sessionStorage.getItem('nameSpace')}/experiments/events?event=True&limit=${events.limit}&offset=${events.offset}&searchName=${document.getElementById('searchText').value}`, 'application/json', events.draw);
+                }
+            },
+
+            draw(data){
+
+                if(events.offset == 0) events.allItemCount = data.itemMetaData.allItemCount;
+
+                if(data.httpStatusCode == 200){
+                    if(data.items.length > 0){
+                        for(var i=0; i<=data.items.length-1; i++){
+                            let createdTime = data.items[i].created_at.replace('T', ' ').replace('Z', '');
+
+                            var html = `<tr><td>${data.items[i].object_id}</td>
+                                            <td>${data.items[i].namespace}</td>
+                                            <td>${data.items[i].name}</td>
+                                            <td>PodChaos</td>
+                                            <td>${data.items[i].message}</td>
+                                            <td>${createdTime}</td></tr>`;
+
+                            func.appendHtml(document.querySelector('.listTable'), html, 'tbody');
+                        };
+                    } else {
+                        var html = '<tr><td colspan="8">No Data.</td></tr>';
+
+                        func.appendHtml(document.querySelector('.listTable'), html, 'tbody');
+                    };
+                } else {
+                    var html = '<tr><td colspan="8">No Data.</td></tr>';
+
+                    func.appendHtml(document.querySelector('.listTable'), html, 'tbody');
+                };
+
+                // more 버튼 활성, 비활성
+                if(document.querySelector('.listTable').querySelectorAll('tr').length < events.allItemCount){
+                    document.querySelector('.more').classList.toggle('on', true);
+                } else {
+                    document.querySelector('.more').classList.toggle('on', false);
+                };
+
+                if(document.getElementById('loading')){
+                    document.getElementById('wrap').removeChild(document.getElementById('loading'));
+                };
+
+            },
+
+            event(){
+                // more 버튼 event
+                document.querySelector('.more').addEventListener('click', (e) => {
+                    if(document.querySelector('.listTable').querySelectorAll('tr').length < events.allItemCount){
+                    events.offset++;
+
+                    events.load();
+                };
+            }, false);
+
+            },
+        }
+        events.init();
+    }
+</script>
+</th:block>
+</html>

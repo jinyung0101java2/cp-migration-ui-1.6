@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+
+<div layout:fragment="content">
+    <div id="content" class="sub-page clusters">
+        <article class="location">
+            <ul>
+                <li><a onclick="movePage(URI_CP_BASE_URL)">Global</a></li>
+                <li><a onclick="movePage(URI_CP_GLOBAL_CLUSTER)">Clusters</a></li>
+            </ul>
+        </article>
+        <article class="base tab-cont-wrap">
+            <!-- tab btn -->
+            <ul class="tab-btn">
+                <!-- 활성화시 active 클래스 추가 -->
+                <li type="create"><a href="javascript:">Cluster Create</a></li>
+                <li type="register"><a href="javascript:">Cluster Register</a></li>
+            </ul>
+            <!-- // tab btn -->
+            <!-- tab content -->
+            <div class="creat tab-content">
+                <!-- Cluster 생성 -->
+                <div>
+                    <dl>
+                        <dt><label for="createName">Cluster Name</label></dt>
+                        <dd>
+                            <input id="createName" type="text"  th:placeholder="#{M0841}"/>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Provider</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select id="createProvider" onchange="changeProviderSelect()">
+                                    <option selected disabled hidden value='' th:text="#{M0845}"></option>
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Cloud Accounts</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select id="createCloudAccount">
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>SSH Keys</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select id="createSshKeys">
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Template</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select id="createTemplates" onchange="changeTemplateSelect()">
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Description</label></dt>
+                        <dd>
+                            <input id="createDescription" type="text" placeholder="Description"/>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Template Detail</label></dt>
+                        <dd>
+                            <textarea id="createTemplatesDetail" rows="30"></textarea>
+                        </dd>
+                    </dl>
+                    <!-- btn -->
+                    <div class="btn02">
+                        <div>
+                            <button type="submit" id="save" th:text="#{M0030}"></button>
+                            <button onclick="movePage(URI_CP_GLOBAL_CLUSTER);" th:text="#{M0028}"></button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Cluster 등록 -->
+                <div>
+                    <dl>
+                        <dt><label for="registerName">Cluster Name</label></dt>
+                        <dd>
+                            <input id="registerName" type="text"  th:placeholder="#{M0842}"/>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Provider</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select id="registerProvider">
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Cluster API URL</label></dt>
+                        <!-- 파일첨부 -->
+                        <dd>
+                            <input id="registerIP" type="text" placeholder="e.g) https://0.0.0.0:6443"/>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Description</label></dt>
+                        <dd>
+                            <input id="registerDescription" type="text" placeholder="Description"/>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Cluster Service Token</label></dt>
+                        <dd>
+                            <textarea id="registerCredentials" rows="20"></textarea>
+                        </dd>
+                    </dl>
+                    <!-- btn -->
+                    <div class="btn02">
+                        <div>
+                            <button type="submit" id="register" th:text="#{M0030}"></button>
+                            <button onclick="movePage(URI_CP_GLOBAL_CLUSTER);" th:text="#{M0028}"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- // tab content -->
+        </article>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+        window.onload = () => {
+            let info;
+            IS_GLOBAL = true;
+            func.init(ASIDE_DP1.GLOBAL, ASIDE_DP2.CLUSTERS);
+
+
+            const createClusters = {
+                init() {
+                    func.loadData('GET', `${func.url}accounts/provider/info`, 'application/json', createClusters.draw);
+
+                },
+
+                draw(data) {
+                    info = new Map(Object.entries(data.items));
+                    let html = ``;
+                    let createProviderHtml = ``;
+                    let registerProviderHtml = ``;
+
+                    for (let key of info.keys()) {
+                        if( key != 'KT' ) {
+                        createProviderHtml += `<option value="${key}">${key}</option>`; }
+                    }
+
+                    for (let key of info.keys()) {
+                        registerProviderHtml += `<option value="${key}">${key}</option>`;
+                    }
+                    func.appendHtml(document.getElementById('createProvider'), createProviderHtml);
+                    func.appendHtml(document.getElementById('registerProvider'), registerProviderHtml);
+
+                    createClusters.event();
+                },
+
+                event() {
+                    document.getElementById('save').addEventListener('click', () => {
+                        func.alertPopup('SAVE', MSG_CHECK_TO_SAVE, true, MSG_CONFIRM, createClusters.save);
+                    }, false);
+                    document.getElementById('register').addEventListener('click', () => {
+                        func.alertPopup('SAVE', MSG_CHECK_TO_SAVE, true, MSG_CONFIRM, createClusters.save);
+                    }, false);
+                },
+
+                save() {
+                    let createType = document.querySelector('.tab-btn li.active').getAttribute('type');
+                    let arg;
+
+                    if(createClusters.validCheck(createType)){
+
+                    switch(createType) {
+                        case 'create':
+                            arg = {
+                                "cluster" : document.getElementById('createName').value,
+                                "resourceName": document.getElementById('createName').value,
+                                "providerType": document.getElementById('createProvider').value,
+                                "sshKey": document.getElementById('createSshKeys').value,
+                                "cloudAccountId": createClusters.getCloudAccount(),
+                                "hclScript": document.getElementById('createTemplatesDetail').value,
+                                "description": document.getElementById('createDescription').value,
+                                "isClusterRegister": false
+                                }
+                                break;
+                        case 'register':
+                            arg = {
+                                "cluster": document.getElementById('registerName').value,
+                                "resourceName": document.getElementById('registerName').value,
+                                "clusterApiUrl": document.getElementById('registerIP').value,
+                                "providerType": document.getElementById('registerProvider').value,
+                                "clusterToken": document.getElementById('registerCredentials').value,
+                                "description": document.getElementById('registerDescription').value,
+                                "isClusterRegister": true
+                                }
+                    }
+                    //check FILE
+                    func.saveData('POST', `${func.url}clusters`, JSON.stringify(arg), true, 'application/json', createClusters.saveComp);
+                    }
+                },
+
+                saveComp() {
+                    func.historyBack();
+                },
+
+                getCloudAccount() {
+                if(document.querySelector('#createCloudAccount > option:checked') == null) {
+                    return "";
+                } else {
+                    return document.querySelector('#createCloudAccount > option:checked').getAttribute('data-id');
+                }
+            },
+
+                validCheck(type){
+                    if(type == 'create') {
+                        if(isEmpty(document.getElementById('createProvider').value)) {
+                            func.alertPopup('ERROR', MSG_REQUEST_VALUE_IS_MISSING, true, MSG_CLOSE,  createClusters.validReset);
+                            IS_VCHK = true;
+                            return false;
+                        }
+                    }
+                    else if(type == 'register') {
+                        if(isEmpty(document.getElementById('registerName').value) || isEmpty(document.getElementById('registerIP').value) ||
+                           isEmpty(document.getElementById('registerCredentials').value) || isEmpty(document.getElementById('registerProvider').value)) {
+                            func.alertPopup('ERROR', MSG_REQUEST_VALUE_IS_MISSING, true, MSG_CLOSE,  createClusters.validReset);
+                            IS_VCHK = true;
+                            return false;
+                        }
+                    }
+
+                    return true;
+                },
+                validReset(){
+                    IS_VCHK = false;
+                }
+            };
+            createClusters.init();
+        };
+
+        function changeProviderSelect() {
+            func.removeHtml(document.getElementById('createCloudAccount'));
+            func.removeHtml(document.getElementById('createSshKeys'));
+            func.removeHtml(document.getElementById('createTemplates'));
+
+            let html = ``;
+            let provider = document.querySelector('#createProvider > option:checked').value;
+            if(provider != '') {
+                func.loadData('GET', `${func.url}accounts/provider/${provider}`, 'application/json', (e) => {
+                    for (let item of e.items) {
+                        html += `<option value="${item.name}" data-id="${item.id}"`;
+                        html += `>${item.name}</option>`;
+                    }
+
+                    func.appendHtml(document.getElementById('createCloudAccount'), html, 'dl');
+                });
+
+                func.loadData('GET', `${func.url}templates/provider/${provider}`, 'application/json', (e) => {
+                    html = ``;
+                    for (let item of e.items) { //FIXME!, 없는 경우
+
+                        html += `<option value="${item.name}" data-id="${item.id}">${item.name}</option>`;
+                    }
+
+                    func.appendHtml(document.getElementById('createTemplates'), html, 'dl');
+                    changeTemplateSelect();
+                });
+
+                func.loadData('GET', `${func.url}clusters/${sessionStorage.getItem('cluster')}/keys/provider/${provider}`, 'application/json', (e) => {
+                    html = ``;
+                    for (let item of e.items) {
+                        html += `<option value="${item.name}" data-id="${item.id}"`;
+                        html += `>${item.name}</option>`;
+                    }
+
+                    if (provider != 'NAVER'){
+                        document.getElementById('createSshKeys').removeAttribute("disabled")
+                        func.appendHtml(document.getElementById('createSshKeys'), html, 'dl');
+                    } else {
+                        document.getElementById('createSshKeys').setAttribute('disabled',true);
+                    }
+
+                });
+            }
+
+
+        }
+
+        function changeTemplateSelect() {
+            func.removeHtml(document.getElementById('createTemplatesDetail'));
+            func.loadData('GET', `${func.url}templates/${document.querySelector('#createTemplates > option:checked').getAttribute('data-id')}`, 'application/json', (e) => {
+                document.getElementById('createTemplatesDetail').value = e.hclScript;
+            })
+        }
+
+        let tabs = document.querySelector('.tab-btn');
+        let tabBtns = document.querySelectorAll('.tab-btn li');
+        let tabContent = document.querySelectorAll('.tab-content > div');
+
+        tabBtns[0].classList.add('active');
+
+        for (let i = 0; i < tabBtns.length; i ++) {
+            (function(idx) {
+                tabBtns[idx].onclick = function() {
+                    for( let j=0; j<tabBtns.length; j++ ) {
+                        tabBtns[j].classList.remove('active');
+                        tabContent[j].style.display = 'none'
+                    }
+                    tabBtns[idx].classList.add('active');
+                    tabContent[idx].style.display = '';
+                };
+                tabContent[idx].style.display = 'none';
+                tabContent[0].style.display = ''
+            })(i);
+        }
+
+    </script>
+</th:block>
+</html>

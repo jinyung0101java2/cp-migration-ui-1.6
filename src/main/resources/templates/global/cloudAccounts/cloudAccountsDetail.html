@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<div layout:fragment="content">
+    <div id="content" class="sub-page">
+        <article class="location">
+            <ul>
+                <li><a onclick="movePage(URI_CP_BASE_URL)">Global</a></li>
+                <li><a onclick="movePage(URI_CP_GLOBAL_CLOUD_ACCOUNTS)">Cloud Accounts</a></li>
+            </ul>
+        </article>
+        <article class="base detail">
+            <div class="notice">
+                <h4>Details</h4>
+                <div class="table_style01">
+                    <table>
+                        <caption>Details</caption>
+                        <colgroup >
+                            <col width="20%" />
+                            <col width="80%" />
+                        </colgroup>
+                        <tbody class="listTable">
+                        <tr>
+                            <th scope="row" class="left">Name</th>
+                            <td class="left">
+                                <input class="left" id="cloudAccountDetailName" type="text" readonly>
+                                <button type="button" class="right" id="cloudAccountDetailNameButton" onclick="activeEdit('cloudAccountDetailName', this.id)" sec:authorize="hasAuthority('SUPER_ADMIN')">Edit</button>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <th scope="row" class="left">Provider</th>
+                            <td class="left">
+                                <input class="left" id="cloudAccountDetailProvider" type="text" readonly>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- btn -->
+            <div class="btn02">
+                <button type="submit" id="delete" th:text="#{M0026}" sec:authorize="hasAuthority('SUPER_ADMIN')"></button>
+                <div>
+                    <a href="javascript:" id="modify" data-role="cloudAccounts" th:text="#{M0025}" sec:authorize="hasAuthority('SUPER_ADMIN')"></a>
+                    <a onclick="movePage(URI_CP_GLOBAL_CLOUD_ACCOUNTS)" th:text="#{M0028}"></a>
+                </div>
+            </div>
+        </article>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+        window.onload = () => {
+
+            IS_GLOBAL = true;
+            func.init(ASIDE_DP1.GLOBAL, ASIDE_DP2.CLOUD_ACCOUNT);
+            let accountInfo;
+            const cloudAccountsDetail = {
+                init(){
+
+                    // nameSpace 정보 조회
+                    func.loadData('GET', `${func.url}accounts/${sessionStorage.getItem('commonName')}`, 'application/json', cloudAccountsDetail.draw);
+                },
+
+                draw(data){
+
+                    // Details data
+
+                    document.getElementById('cloudAccountDetailName').value = data.name;
+                    document.getElementById('cloudAccountDetailProvider').value = data.provider;
+
+
+
+                    accountInfo = data;
+
+                    var html = ``;
+
+                    switch (data.provider) {
+                        case 'GCP':
+                            html = `<tr><th scope="row" class="left">Provider-Info</th><td class="left">
+                                <input class="left" id="cloudAccountGCPProviderInfo" type="password" readonly>
+                                </td></tr>`;
+                            func.appendHtml(document.querySelector('.listTable'), html, 'tbody');
+                            document.getElementById('cloudAccountGCPProviderInfo').value = MASKED_DATA;
+                            break;
+                        case 'AWS':
+                            html += `<tr><th scope="row" class="left">Region</th><td class="left box">
+                                    <input class="left" id="cloudAccountDetailRegion" type="text" readonly>
+                                </td></tr>`;
+                            html += `<tr><th scope="row" class="left">Access-Key</th><td class="left box">
+                                    <input class="left" id="cloudAccountAWSAccessKey" type="password" readonly>
+                                </td></tr>`;
+                            html += `<tr><th scope="row" class="left">Secret-Key</th><td class="left">
+                                    <input class="left" id="cloudAccountAWSSecretKey" type="password" readonly>
+                                </td></tr>`;
+                            func.appendHtml(document.querySelector('.listTable'), html, 'tbody');
+                            document.getElementById('cloudAccountDetailRegion').value = data.region;
+                            document.getElementById('cloudAccountAWSAccessKey').value = MASKED_DATA;
+                            document.getElementById('cloudAccountAWSSecretKey').value = MASKED_DATA;
+                            break;
+                        case 'OPENSTACK':
+                            html += `<tr><th scope="row" class="left">Project</th><td class="left box">
+                                    <input class="left" id="cloudAccountDetailProject" type="text" readonly>
+                                </td></tr>`;
+                            html += `<tr><th scope="row" class="left">Region</th><td class="left box">
+                                    <input class="left" id="cloudAccountDetailRegion" type="text" readonly>
+                                </td></tr>`;
+                            html +=  `<tr><th scope="row" class="left">Auth_URL</th><td class="left box">
+                                    <input class="left" id="cloudAccountOPENSTACKURL" type="password" readonly>
+                                </td></tr>`;
+                            html +=  `<tr><th scope="row" class="left">Password</th><td class="left box">
+                                    <input class="left" id="cloudAccountOPENSTACKPassword" type="password" readonly>
+                                </td></tr>`;
+                            html +=  `<tr><th scope="row" class="left">UserName</th><td class="left box">
+                                    <input class="left" id="cloudAccountOPENSTACKUserName" type="password" readonly>
+                                </td></tr>`;
+                            func.appendHtml(document.querySelector('.listTable'), html, 'tbody');
+                            document.getElementById('cloudAccountDetailProject').value = data.project;
+                            document.getElementById('cloudAccountDetailRegion').value = data.region;
+                            document.getElementById('cloudAccountOPENSTACKURL').value = MASKED_DATA;
+                            document.getElementById('cloudAccountOPENSTACKPassword').value = MASKED_DATA;
+                            document.getElementById('cloudAccountOPENSTACKUserName').value = MASKED_DATA;
+                            break;
+                        case 'NHN':
+                            html += `<tr><th scope="row" class="left">Project</th><td class="left box">
+                                    <input class="left" id="cloudAccountDetailProject" type="password" readonly>
+                                </td></tr>`;
+                            html +=  `<tr><th scope="row" class="left">Region</th><td class="left box">
+                                    <input class="left" id="cloudAccountDetailRegion" type="text" readonly>
+                                </td></tr>`;
+                            html +=  `<tr><th scope="row" class="left">Auth URL</th><td class="left box">
+                                    <input class="left" id="cloudAccountNHNURL" type="password" readonly>
+                                </td></tr>`;
+                            html +=  `<tr><th scope="row" class="left">Password</th><td class="left box">
+                                    <input class="left" id="cloudAccountNHNPassword" type="password" readonly>
+                                </td></tr>`;
+                            html += `<tr><th scope="row" class="left">UserName</th><td class="left box">
+                                    <input class="left" id="cloudAccountNHNUserName" type="password" readonly>
+                                </td></tr>`;
+                            func.appendHtml(document.querySelector('.listTable'), html, 'tbody');
+                            document.getElementById('cloudAccountDetailProject').value = data.project;
+                            document.getElementById('cloudAccountDetailRegion').value = data.region;
+                            document.getElementById('cloudAccountNHNURL').value = MASKED_DATA;
+                            document.getElementById('cloudAccountNHNPassword').value = MASKED_DATA;
+                            document.getElementById('cloudAccountNHNUserName').value = MASKED_DATA;
+                            break;
+                        case 'NAVER' :
+                            html += `<tr><th scope="row" class="left">site</th><td class="left">
+                                    <input class="left" id="cloudAccountNAVERSite" type="password" readonly>
+                                </td></tr>`;
+                            html += `<tr><th scope="row" class="left">Region</th><td class="left box">
+                                    <input class="left" id="cloudAccountDetailRegion" type="text" readonly>
+                                </td></tr>`;
+                            html += `<tr><th scope="row" class="left">Access-Key</th><td class="left box">
+                                    <input class="left" id="cloudAccountNAVERAccessKey" type="password" readonly>
+                                </td></tr>`;
+                            html += `<tr><th scope="row" class="left">Secret-Key</th><td class="left">
+                                    <input class="left" id="cloudAccountNAVERSecretKey" type="password" readonly>
+                                </td></tr>`;
+                            func.appendHtml(document.querySelector('.listTable'), html, 'tbody');
+                            document.getElementById('cloudAccountNAVERSite').value = MASKED_DATA;
+                            document.getElementById('cloudAccountDetailRegion').value = data.region;
+                            document.getElementById('cloudAccountNAVERAccessKey').value = MASKED_DATA;
+                            document.getElementById('cloudAccountNAVERSecretKey').value = MASKED_DATA;
+                            break;
+                        default:
+                        //FIXME! Error 처리
+                    }
+
+                    html = `<tr><th scope="row" class="left">Created</th><td class="left" id="created"></td></tr>`;
+                    func.appendHtml(document.querySelector('.listTable'), html, 'tbody');
+                    document.getElementById('created').innerText = data.created;
+
+                    cloudAccountsDetail.event()
+                },
+
+                event(){
+                    if(document.getElementById('delete')) {
+                        document.getElementById('delete').addEventListener('click', () => {
+                            func.alertPopup('DELETE', MSG_CHECK_TO_DELETE, true, MSG_CONFIRM, cloudAccountsDetail.delete);
+                        }, false);}
+
+                    if(document.getElementById('modify')) {
+                        document.getElementById('modify').addEventListener('click', () => {
+                            func.alertPopup('MODIFY', MSG_CHECK_TO_SAVE, true, MSG_CONFIRM, cloudAccountsDetail.modify);
+                        }, false);}
+                },
+
+                modify(){
+                    let updateAccount = {
+                        "resourceUid": sessionStorage.getItem('commonName'),
+                        "resourceName": document.getElementById('cloudAccountDetailName').value
+
+                    };
+                    //     //FIXME! alert 창 띄우기
+
+                    func.saveData('PATCH', `${func.url}accounts`, JSON.stringify(updateAccount), true, 'application/json', func.refresh);
+                },
+
+                returnPage() {
+                    document.location.href = URI_CP_GLOBAL_CLOUD_ACCOUNTS + URI_CP_DETAILS;
+                },
+
+                delete(){
+                    func.saveData('DELETE', `${func.url}accounts/${sessionStorage.getItem('commonName')}`, '', true, 'application/json', func.historyBack);
+                },
+            };
+
+            cloudAccountsDetail.init();
+        }
+    </script>
+</th:block>
+</html>

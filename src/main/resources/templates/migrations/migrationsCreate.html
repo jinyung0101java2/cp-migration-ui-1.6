@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+
+<div layout:fragment="content">
+    <div id="content" class="sub-page clusters">
+        <article class="location">
+            <ul>
+                <li><a onclick="movePage(URI_CP_MIGRATIONS_LIST)">Migrations</a></li>
+                <li><a onclick="movePage(URI_CP_MIGRATIONS_LIST)">Migrations</a></li>
+            </ul>
+        </article>
+        <article class="base">
+            <div class="creat" style="overflow: auto">
+                <h3 th:text="|Migrations #{M0024}|"></h3>
+                <div class="source" style="float: left;width: 45%;margin-right: 40px;">
+                    <h3 th:text="Soucre"></h3>
+                    <dl>
+                        <dt><label for="sourceName">Name</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select id="sourceName">
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="sourceBucket">Bucket</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select id="sourceBucket">
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                </div>
+                <div class="destination" style="float: left;width: 45%;margin-right: 40px;">
+                    <h3 th:text="Destination"></h3>
+                    <dl>
+                        <dt><label for="destinationName">Name</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select id="destinationName">
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="destinationBucket">Bucket</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select id="destinationBucket">
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+            <!-- btn -->
+            <div class="btn02">
+                <button onclick="movePage(URI_CP_MIGRATIONS_LIST);" th:text="#{M0028}"></button>
+                <div>
+                    <button type="submit" id="sync" th:text="#{M0938}"></button>
+                </div>
+                <div>
+                    <button type="submit" id="copy" th:text="#{M0939}"></button>
+                </div>
+            </div>
+        </article>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+        window.onload = () => {
+
+            func.init(ASIDE_DP1.MIGRATIONS, ASIDE_DP2.MIGRATIONS);
+
+            const accounts = {
+                init() {
+
+                    // provider 정보 조회
+                    //func.loadData('GET', `${func.url}accounts/provider/info`, 'application/json', createSshKeys.draw);
+
+                },
+
+                /*draw(data) {
+                    info = new Map(Object.entries(data.items));
+                    let html = ``;
+                    for (let key of info.keys()) {
+                        if( key != 'KT' && key != 'NAVER') {
+                            html += `<option value="${key}">${key}</option>`; }
+                    }
+                    func.appendHtml(document.getElementById('provider'), html, 'select');
+                    document.getElementById('provider').selectedIndex = "0";
+
+                    createSshKeys.event();
+                },*/
+
+                event() {
+                    document.getElementById('sync').addEventListener('click', (e) => {
+                        alert("sync")
+                        let accounts =  {
+                            "src": {
+                                "storageType": "s3",
+                                "endpoint": "http://115.68.198.175:9000",
+                                "accessKeyId": "admin",
+                                "SecretAccessKey": "tpsxj0812"
+                            },
+                            "dst": {
+                                "storageType": "s3",
+                                "endpoint": "http://115.68.198.65:9000",
+                                "accessKeyId": "admin",
+                                "SecretAccessKey": "tpsxj0812"
+                            }
+                        }
+
+                        func.saveData('POST', `https://mig.115.68.198.189.nip.io/v1/migration/sync/sync`, JSON.stringify(accounts), true, 'application/json');
+
+                    }, true);
+
+
+
+                 /*
+                    alert('event')
+                    if(document.getElementById('save')) {
+                        document.getElementById('save').addEventListener('click', () => {
+                            func.alertPopup('SAVE', MSG_CHECK_TO_SAVE, true, MSG_CONFIRM, createSshKeys.save);
+                        }, false);
+                    }
+
+                    if(document.getElementById('key')) {
+                        document.getElementById("key").addEventListener('click', () => {
+                            let target = document.getElementById("key");
+                            target.onchange = (e) => {
+                                processFile(e.target.files[0]);
+                            }
+                            function processFile(file) {
+                                var reader = new FileReader();
+
+                                reader.onload = function () {
+                                    document.getElementById('output').innerText = reader.result;
+                                };
+                                reader.readAsText(file, "euc-kr");
+                            }
+                        }, false);
+                    }
+
+                    if (document.getElementById('sync')) {
+                        alert("sync")
+                        document.getElementById('sync').addEventListener('click', (e) => {
+                            alert("sync")
+                            let accounts =  {
+                                "src": {
+                                    "storageType": "s3",
+                                    "endpoint": "http://115.68.198.175:9000",
+                                    "accessKeyId": "admin",
+                                    "SecretAccessKey": "tpsxj0812"
+                                },
+                                "dst": {
+                                    "storageType": "s3",
+                                    "endpoint": "http://115.68.198.65:9000",
+                                    "accessKeyId": "admin",
+                                    "SecretAccessKey": "tpsxj0812"
+                                }
+                            }
+
+                            func.saveData('POST', `https://mig.115.68.198.189.nip.io/v1/migration/sync/sync`, JSON.stringify(accounts), true, 'application/json');
+
+                        }, true);
+                    }*/
+                },
+
+                save() {
+                    let createName;
+                    let providerType = document.getElementById('provider').value;
+                    let privateKey = document.getElementById('output').innerHTML;
+
+                    privateKey = privateKey.replace(/<br>/ig, '\n');
+
+                    createName = {
+                        "resourceName": document.getElementById('name').value,
+                        "providerType": providerType,
+                        "privateKey": privateKey
+                    };
+
+                    //check FILE
+                    func.saveData('POST', `${func.url}clusters/${sessionStorage.getItem('cluster')}/keys`, JSON.stringify(createName), true, 'application/json', createSshKeys.saveComp);
+                    //FIXME!!, 확인 버튼 클릭 전 이동하는 이슈
+                },
+
+                saveComp() {
+                    func.historyBack();
+                }
+
+
+            };
+            accounts.init();
+        }
+    </script>
+</th:block>
+</html>

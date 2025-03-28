@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layouts/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+
+<div layout:fragment="content">
+    <div class="sub-page clusters" id="content">
+        <article class="location">
+            <ul>
+                <li><a onclick="movePage(URI_CP_CHAOS_EXPERIMENTS)">Chaos</a></li>
+                <li><a onclick="movePage(URI_CP_CHAOS_EXPERIMENTS)">Experiments</a></li>
+            </ul>
+        </article>
+        <article class="base tab-cont-wrap">
+            <!-- tab btn -->
+            <ul class="tab-btn">
+                <!-- 활성화시 active 클래스 추가 -->
+                <li class="experiments" id="podFault" type="podFault"><a href="javascript:">Pod Fault</a></li>
+                <li class="experiments" id="networkAttack" type="networkAttack"><a href="javascript:">Network Attack</a>
+                </li>
+                <li class="experiments" id="stressTest" type="stressTest"><a href="javascript:">Stress Test</a></li>
+            </ul>
+            <!-- // tab btn -->
+            <!-- tab content -->
+            <div class="creat tab-content">
+                <!-- Pod Fault -->
+                <div>
+                    <dl>
+                        <dt><label for="namePod">Name</label></dt>
+                        <dd>
+                            <input class="name" id="namePod" th:placeholder="#{M0872}" type="text"/>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Namespace</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select class="chaosNamespace" id="chaosNamespacePod">
+                                    <option disabled hidden selected th:text="#{M0874}" value=''></option>
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="gracePeriod">Grace period</label></dt>
+                        <dd>
+                            <input id="gracePeriod" th:placeholder="#{M0873}" type="text"/>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Namespace Selector</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select class="namespaceSelect" id="namespaceSelectPod"
+                                        onchange="changeNamespaceSelect()">
+                                    <option disabled hidden selected th:text="#{M0869}" value=''></option>
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Label Selector</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select class="labelSelect" id="labelSelectPod" onchange="changeLabelSelect()">
+                                    <option selected th:text="#{M0870}" value=''></option>
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label >Preview of Pods to be injected</label></dt>
+                        <dd>
+                            <div class="table_style01">
+                                <table>
+                                    <caption>Pod List</caption>
+                                    <colgroup>
+                                        <col width="12%"/>
+                                        <col width="38%"/>
+                                        <col width="30%"/>
+                                        <col width="20%"/>
+                                    </colgroup>
+                                    <thead>
+                                    <tr>
+                                        <th scope="col"></th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Namespace</th>
+                                        <th scope="col">State</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="podList" id="podListPod">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </dd>
+                    </dl>
+                </div>
+                <!-- Network Attack-->
+                <div class="network">
+                    <dl>
+                        <dt><label for="nameNetwork">Name</label></dt>
+                        <dd>
+                            <input class="name" id="nameNetwork" th:placeholder="#{M0872}" type="text"/>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Namespace</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select class="chaosNamespace" id="chaosNamespaceNetwork">
+                                    <option disabled hidden selected th:text="#{M0874}" value=''></option>
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="latency">Latency</label></dt>
+                        <dd>
+                            <input class="latency" id="latency" th:placeholder="#{M0871}" type="text"/>
+
+                            <input class="latencyRadio" id="msLatency" name="latency" type="radio" value="ms"/>
+                            <label class="latencyRadioLabel" for="msLatency">ms</label>
+                            <input class="latencyRadio" id="sLatency" name="latency" type="radio" value="s"/>
+                            <label class="latencyRadioLabel" for="sLatency">s</label>
+                            <input class="latencyRadio" id="mLatency" name="latency" type="radio" value="m"/>
+                            <label class="latencyRadioLabel" for="mLatency">m</label>
+                            <input class="latencyRadio" id="hLatency" name="latency" type="radio" value="h"/>
+                            <label class="latencyRadioLabel" for="hLatency">h</label>
+
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="durationNetwork">Duration</label></dt>
+                        <dd>
+                            <input class="duration" id="durationNetwork" th:placeholder="#{M0890}" type="text"/>
+                            <input class="durationNetworkRadio" id="msDurationNetwork" name="durationNetwork" type="radio" value="ms"/>
+                            <label class="durationNetworkRadioLabel" for="msDurationNetwork">ms</label>
+                            <input class="durationNetworkRadio" id="sDurationNetwork" name="durationNetwork" type="radio" value="s"/>
+                            <label class="durationNetworkRadioLabel" for="sDurationNetwork">s</label>
+                            <input class="durationNetworkRadio" id="mDurationNetwork" name="durationNetwork" type="radio" value="m"/>
+                            <label class="durationNetworkRadioLabel" for="mDurationNetwork">m</label>
+                            <input class="durationNetworkRadio" id="hDurationNetwork" name="durationNetwork" type="radio" value="h"/>
+                            <label class="durationNetworkRadioLabel" for="hDurationNetwork">h</label>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Namespace Selector</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select class="namespaceSelect" id="namespaceSelectNetwork"
+                                        onchange="changeNamespaceSelect()">
+                                    <option disabled hidden selected th:text="#{M0869}" value=''></option>
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Label Selector</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select class="labelSelect" id="labelSelectNetwork" onchange="changeLabelSelect()">
+                                    <option selected th:text="#{M0870}" value=''></option>
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Preview of Pods to be injected</label></dt>
+                        <dd>
+                            <div class="table_style01">
+                                <table>
+                                    <caption>Pod List</caption>
+                                    <colgroup>
+                                        <col width="12%"/>
+                                        <col width="38%"/>
+                                        <col width="30%"/>
+                                        <col width="20%"/>
+                                    </colgroup>
+                                    <thead>
+                                    <tr>
+                                        <th scope="col"></th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Namespace</th>
+                                        <th scope="col">State</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="podList" id="podListNetwork">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </dd>
+                    </dl>
+                </div>
+                <!-- Stress Test-->
+                <div>
+                    <dl>
+                        <dt><label for="nameStress">Name</label></dt>
+                        <dd>
+                            <input class="name" id="nameStress" th:placeholder="#{M0872}" type="text"/>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Namespace</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select class="chaosNamespace" id="chaosNamespaceStress">
+                                    <option disabled hidden selected th:text="#{M0874}" value=''></option>
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="cpuWorkers">CPU Workers</label></dt>
+                        <dd>
+                            <input id="cpuWorkers" th:placeholder="#{M0875}" type="text"/>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="cpuLoad">CPU Load</label></dt>
+                        <dd>
+                            <input id="cpuLoad" th:placeholder="#{M0876}" type="text"/>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="memoryWorkers">Memory Workers</label></dt>
+                        <dd>
+                            <input id="memoryWorkers" th:placeholder="#{M0877}" type="text"/>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="memorySize">Memory Size</label></dt>
+                        <dd>
+                            <input class="memorySize" id="memorySize" th:placeholder="#{M0878}" type="text"/>
+                            <input class="memorySizeRadio" id="bMemorySize" name="memorySize" type="radio" value="B"/>
+                            <label class="memorySizeRadioLabel" for="bMemorySize">B</label>
+                            <input class="memorySizeRadio" id="kbMemorySize" name="memorySize" type="radio" value="KB"/>
+                            <label class="memorySizeRadioLabel" for="kbMemorySize">KB</label>
+                            <input class="memorySizeRadio" id="mbMemorySize" name="memorySize" type="radio" value="MB"/>
+                            <label class="memorySizeRadioLabel" for="mbMemorySize">MB</label>
+                            <input class="memorySizeRadio" id="gbMemorySize" name="memorySize" type="radio" value="GB"/>
+                            <label class="memorySizeRadioLabel" for="gbMemorySize">GB</label>
+                            <input class="memorySizeRadio" id="tbMemorySize" name="memorySize" type="radio" value="TB"/>
+                            <label class="memorySizeRadioLabel" for="tbMemorySize">TB</label>
+
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="durationStress">Duration</label></dt>
+                        <dd>
+                            <input class="duration" id="durationStress" th:placeholder="#{M0890}" type="text"/>
+                            <input class="durationStressRadio" id="msDurationStress" name="durationStress" type="radio" value="ms"/>
+                            <label class="durationStressRadioLabel" for="msDurationStress">ms</label>
+                            <input class="durationStressRadio" id="sDurationStress" name="durationStress" type="radio" value="s"/>
+                            <label class="durationStressRadioLabel" for="sDurationStress">s</label>
+                            <input class="durationStressRadio" id="mDurationStress" name="durationStress" type="radio" value="m"/>
+                            <label class="durationStressRadioLabel" for="mDurationStress">m</label>
+                            <input class="durationStressRadio" id="hDurationStress" name="durationStress" type="radio" value="h"/>
+                            <label class="durationStressRadioLabel" for="hDurationStress">h</label>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Namespace Selector</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select class="namespaceSelect" id="namespaceSelectStress"
+                                        onchange="changeNamespaceSelect()">
+                                    <option disabled hidden selected th:text="#{M0869}" value=''></option>
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Label Selector</label></dt>
+                        <dd>
+                            <fieldset>
+                                <select class="labelSelect" id="labelSelectStress" onchange="changeLabelSelect()">
+                                    <option selected th:text="#{M0870}" value=''></option>
+                                </select>
+                            </fieldset>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label>Preview of Pods to be injected([[#{M0927}]])</label></dt>
+                        <dd>
+                            <div class="table_style01">
+                                <table>
+                                    <caption>Pod List</caption>
+                                    <colgroup>
+                                        <col width="12%"/>
+                                        <col width="38%"/>
+                                        <col width="30%"/>
+                                        <col width="20%"/>
+                                    </colgroup>
+                                    <thead>
+                                    <tr>
+                                        <th scope="col"></th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Namespace</th>
+                                        <th scope="col">State</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="podList" id="podListStress">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </dd>
+                    </dl>
+                </div>
+                <div class="btn02">
+                    <div>
+                        <button class="save" th:text="#{M0030}" type="submit"></button>
+                        <button onclick="movePage(URI_CP_GLOBAL_CLUSTER);" th:text="#{M0028}"></button>
+                    </div>
+                </div>
+            </div>
+            <!-- // tab content -->
+        </article>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+        window.onload = () => {
+            func.init(ASIDE_DP1.CHAOS, ASIDE_DP2.EXPERIMENTS);
+            init();
+        }
+
+        let tabs = document.querySelector('.tab-btn');
+        let tabBtns = document.querySelectorAll('.tab-btn li');
+        let tabContent = document.querySelectorAll('.tab-content > div');
+        let tabIndex = 0;
+        let gracePeriod;
+
+        tabBtns[0].classList.add('active');
+
+        for (let i = 0; i < tabBtns.length; i++) {
+            (function (idx) {
+                tabBtns[idx].onclick = function () {
+                    tabIndex = idx;
+                    for (let j = 0; j < tabBtns.length; j++) {
+                        tabBtns[j].classList.remove('active');
+                        tabContent[j].style.display = 'none';
+                        func.removeHtml(document.getElementsByClassName('chaosNamespace')[j]);
+                        func.removeHtml(document.getElementsByClassName('namespaceSelect')[j]);
+                        func.removeHtml(document.getElementsByClassName('labelSelect')[j]);
+                        func.removeHtml(document.getElementsByClassName('podList')[j]);
+                        document.getElementsByClassName('name')[j].value = '';
+                    }
+                    document.getElementById('gracePeriod').value = '';
+                    document.getElementById('latency').value = '';
+                    document.getElementById('durationNetwork').value = '';
+                    document.getElementById('durationStress').value = '';
+                    document.getElementById('cpuWorkers').value = '';
+                    document.getElementById('cpuLoad').value = '';
+                    document.getElementById('memoryWorkers').value = '';
+                    document.getElementById('memorySize').value = '';
+
+                    const latencyRadio = document.querySelectorAll('input[name="latency"]');
+                    latencyRadio.forEach(radio => radio.checked = false);
+                    const memorySizeRadio = document.querySelectorAll('input[name="memorySize"]');
+                    memorySizeRadio.forEach(radio => radio.checked = false);
+
+                    const durationNetworkRadio = document.querySelectorAll('input[name="durationNetwork"]');
+                    durationNetworkRadio.forEach(radio => radio.checked = false);
+                    const durationStressRadio = document.querySelectorAll('input[name="durationStress"]');
+                    durationStressRadio.forEach(radio => radio.checked = false);
+
+
+                    tabBtns[idx].classList.add('active');
+                    tabContent[idx].style.display = '';
+                    init();
+                };
+                tabContent[idx].style.display = 'none';
+                tabContent[0].style.display = '';
+            })(i);
+        }
+
+        function init() {
+            func.loadData('GET', `${func.url}clusters/${sessionStorage.getItem('cluster')}/users/nonOperationalNamespacesList`, 'application/json', chaosNamespaces);
+            func.loadData('GET', `${func.url}clusters/${sessionStorage.getItem('cluster')}/users/nonOperationalNamespacesList`, 'application/json', namespaceSelector);
+        }
+
+        function chaosNamespaces(data) {
+            let chaosNamespace = `<option selected hidden value='' >${CHAOS_NAMESPACE}</option>`;
+            for (let i = 0; i < data.items.length; i++) {
+                if (data.items[i].cpNamespace === 'ALL') continue;
+                chaosNamespace += `<option value="${data.items[i].cpNamespace}">${data.items[i].cpNamespace}</option>`;
+            }
+            func.appendHtml(document.getElementsByClassName('chaosNamespace')[tabIndex], chaosNamespace);
+        }
+
+        function namespaceSelector(data) {
+            let namespaceSelect = `<option selected hidden value='' >${NAMESPACESELECT}</option>`;
+            let labelSelect = `<option selected hidden value='' >${LABELSELECT}</option>`;
+            for (let i = 0; i < data.items.length; i++) {
+                if (data.items[i].cpNamespace === 'ALL') continue;
+                namespaceSelect += `<option value="${data.items[i].cpNamespace}">${data.items[i].cpNamespace}</option>`;
+            }
+
+            func.appendHtml(document.getElementsByClassName('namespaceSelect')[tabIndex], namespaceSelect);
+            func.appendHtml(document.getElementsByClassName('labelSelect')[tabIndex], labelSelect);
+        }
+
+        function changeNamespaceSelect() {
+            func.removeHtml(document.getElementsByClassName('labelSelect')[tabIndex]);
+            func.removeHtml(document.getElementsByClassName('podList')[tabIndex]);
+            let namespaceSelect = document.getElementsByClassName('namespaceSelect')[tabIndex].value;
+            func.loadData('GET', `${func.url}clusters/${sessionStorage.getItem('cluster')}/namespaces/${namespaceSelect}/pods/labels`, 'application/json', labelSelector);
+        }
+
+        function labelSelector(data) {
+            const labels = data.items[0].labels
+            let labelSelect = null;
+            if (Object.keys(labels).length !== 0) {
+                labelSelect += `<option selected hidden value='' >${LABELSELECT}</option><option value='all' >All</option>`;
+            } else {
+                labelSelect += `<option selected hidden value='' >${LABELSELECT}</option><option value='' disabled selected>해당 Namespace에 Pod 없음</option>`;
+
+            }
+
+            for (let key in labels) {
+                if (labels.hasOwnProperty(key)) {
+                    const values = labels[key];
+                    values.forEach(value => {
+                        labelSelect += `<option value="${key}:${value}">${key}:${value}</option>`;
+                    })
+                }
+            }
+            func.appendHtml(document.getElementsByClassName('labelSelect')[tabIndex], labelSelect);
+        }
+
+        let labelSelectValue;
+
+        function changeLabelSelect() {
+            func.removeHtml(document.getElementsByClassName('podList')[tabIndex]);
+
+            let namespaceSelect = document.getElementsByClassName('namespaceSelect')[tabIndex].value;
+
+            labelSelectValue = document.getElementsByClassName('labelSelect')[tabIndex].value;
+            const selector = labelSelectValue.replace(':', "=");
+
+            if (labelSelectValue !== 'all') {
+                func.loadData('GET', `${func.url}clusters/${sessionStorage.getItem('cluster')}/namespaces/${namespaceSelect}/pods/resources?selector=${selector}`, 'application/json', podList);
+            } else {
+                func.loadData('GET', `${func.url}clusters/${sessionStorage.getItem('cluster')}/namespaces/${namespaceSelect}/pods`, 'application/json', podList);
+            }
+        }
+
+        function podList(data) {
+            let html = '';
+            labelSelectValue = labelSelectValue.split(':')[0]
+
+            for (let i = 0; i < data.items.length; i++) {
+                if (data.items[i].podStatus === 'Running') {
+                    const dataLabels = data.items[i].labels;
+                    if (Object.keys(dataLabels).includes(labelSelectValue)) {
+                        html += `<tr>
+                                   <td>
+                                     <input type="checkbox" class="pods" id="check_${data.items[i].name}" name="checkboxPod" value=${data.items[i].name} />
+                                     <label for="check_${data.items[i].name}"></label>
+                                   </td>
+                                   <td id=${data.items[i].name}>${data.items[i].name}</td>
+                                   <td id=${data.items[i].namespace}>${data.items[i].namespace}</td>
+                                   <td id=${data.items[i].podStatus}>${data.items[i].podStatus}</td>
+                                 </tr>`;
+                    }
+                    if (labelSelectValue === 'all') {
+                        html += `<tr>
+                                   <td>
+                                     <input type="checkbox" class="pods" id="check_${data.items[i].name}" name="checkboxPod" value=${data.items[i].name} />
+                                     <label for="check_${data.items[i].name}"></label>
+                                   </td>
+                                   <td id=${data.items[i].name}>${data.items[i].name}</td>
+                                   <td id=${data.items[i].namespace}>${data.items[i].namespace}</td>
+                                   <td id=${data.items[i].podStatus}>${data.items[i].podStatus}</td>
+                                 </tr>`;
+                    }
+                }
+            }
+
+            func.appendHtml(document.getElementsByClassName("podList")[tabIndex], html, "tbody",);
+            selectPod();
+        }
+
+        document.querySelector('.save').addEventListener('click', () => {
+            func.alertPopup('SAVE', MSG_CHECK_TO_SAVE, true, MSG_CONFIRM, save);
+        }, false);
+
+        function validReset() {
+            IS_VCHK = false;
+        }
+
+        function validCheck(fault) {
+            const regExp = /^[0-9a-z]+$/;
+            const regExpNum = /^[0-9]+$/;
+
+            if (isEmpty(document.getElementsByClassName('name')[tabIndex].value)) {
+                func.alertPopup('ERROR', MSG_ENTER_NAME, true, MSG_CONFIRM, validReset);
+                IS_VCHK = true;
+                return false;
+            }
+            if (!regExp.test(document.getElementsByClassName('name')[tabIndex].value) || regExpNum.test(document.getElementsByClassName('name')[tabIndex].value)) {
+                func.alertPopup('ERROR', MSG_INVALID_NAME_, true, MSG_CONFIRM, validReset);
+                IS_VCHK = true;
+                return false;
+            }
+            if (isEmpty(document.getElementsByClassName('chaosNamespace')[tabIndex].value)) {
+                func.alertPopup('ERROR', MSG_SELECT_NAMESPACE, true, MSG_CONFIRM, validReset);
+                IS_VCHK = true;
+                return false;
+            }
+            if (isEmpty(document.getElementsByClassName('namespaceSelect')[tabIndex].value)) {
+                func.alertPopup('ERROR', MSG_SELECT_NAMESPACESELECTOR, true, MSG_CONFIRM, validReset);
+                IS_VCHK = true;
+                return false;
+            }
+            if (isEmpty(document.getElementsByClassName('labelSelect')[tabIndex].value)) {
+                func.alertPopup('ERROR', MSG_SELECT_LABELSELECTOR, true, MSG_CONFIRM, validReset);
+                IS_VCHK = true;
+                return false;
+            }
+            const isCheck = document.querySelectorAll('input[name="checkboxPod"]');
+            const isAnyChecked = Array.from(isCheck).some(checkbox => checkbox.checked);
+
+            if (!isAnyChecked) {
+                func.alertPopup('ERROR', MSG_SELECT_TARGET_POD, true, MSG_CONFIRM, validReset);
+                IS_VCHK = true;
+                return false;
+            }
+            if (fault === 'podFault') {
+                if (isEmpty(document.getElementById('gracePeriod').value)) {
+                    gracePeriod = 0;
+                }
+            }
+            if (fault === 'networkAttack') {
+                if (isEmpty(document.getElementById('latency').value)) {
+                    func.alertPopup('ERROR', MSG_EMPTY_LATENCY, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+                if (!regExpNum.test(document.getElementById('latency').value)) {
+                    func.alertPopup('ERROR', MSG_INVALID_LATENCY, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+                if (radioCheck('latency') === undefined) {
+                    func.alertPopup('ERROR', MSG_SELECT_LATENCY_UNIT, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+                if (isEmpty(document.getElementById('durationNetwork').value)) {
+                    func.alertPopup('ERROR', MSG_EMPTY_DURATION, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+                if (!regExpNum.test(document.getElementById('durationNetwork').value)) {
+                    func.alertPopup('ERROR', MSG_INVALID_DURATION, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+                if (radioCheck('durationNetwork') === undefined) {
+                    func.alertPopup('ERROR', MSG_SELECT_DURATION_UNIT, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+                if (document.getElementsByClassName('durationNetworkRadio')[radioCheck('durationNetwork')].value === 'h' && document.getElementById('durationNetwork').value > 12) {
+                    func.alertPopup('ERROR', MSG_SELECT_DURATION_HOUR_LIMIT, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+            }
+            if (fault === 'stressTest') {
+                if (isEmpty(document.getElementById('durationStress').value)) {
+                    func.alertPopup('ERROR', MSG_EMPTY_DURATION, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+                if (!regExpNum.test(document.getElementById('durationStress').value)) {
+                    func.alertPopup('ERROR', MSG_INVALID_DURATION, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+                if (radioCheck('durationStress') === undefined) {
+                    func.alertPopup('ERROR', MSG_SELECT_DURATION_UNIT, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+                if (document.getElementsByClassName('durationStressRadio')[radioCheck('durationStress')].value === 'h' && document.getElementById('durationStress').value > 12) {
+                    func.alertPopup('ERROR', MSG_SELECT_DURATION_HOUR_LIMIT, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+                if (isEmpty(document.getElementById("cpuWorkers").value) && isEmpty(document.getElementById("memoryWorkers").value)) {
+                    func.alertPopup('ERROR', MSG_ENTER_STRESSORS, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+                if ((isEmpty(document.getElementById("cpuWorkers").value) && !isEmpty(document.getElementById("cpuLoad").value)) || (!isEmpty(document.getElementById("cpuWorkers").value) && (!regExpNum.test(document.getElementById('cpuWorkers').value) || 1 > document.getElementById("cpuWorkers").value || 8192 < document.getElementById("cpuWorkers").value))) {
+                    func.alertPopup('ERROR', MSG_INVALID_CPU_WORKERS, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+                if (!isEmpty(document.getElementById("cpuLoad").value) && (!regExpNum.test(document.getElementById('cpuLoad').value) || 0 > document.getElementById('cpuLoad').value || 100 < document.getElementById('cpuLoad').value)) {
+                    func.alertPopup('ERROR', MSG_INVALID_CPU_LOAD, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+                if ((isEmpty(document.getElementById("memoryWorkers").value) && !isEmpty(document.getElementById("memorySize").value)) || (!isEmpty(document.getElementById("memoryWorkers").value) && (!regExpNum.test(document.getElementById('memoryWorkers').value) || 1 > document.getElementById("memoryWorkers").value || 8192 < document.getElementById("memoryWorkers").value))) {
+                    func.alertPopup('ERROR', MSG_INVALID_MEMORY_WORKERS, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+                if (!isEmpty(document.getElementById("memorySize").value) && (!regExpNum.test(document.getElementById('memorySize').value) || 0 > document.getElementById('memorySize').value)) {
+                    func.alertPopup('ERROR', MSG_INVALID_MEMORY_SIZE, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+                if (!isEmpty(document.getElementById("memorySize").value) && radioCheck('memorySize') === undefined) {
+                    func.alertPopup('ERROR', MSG_SELECT_MEMORY_SIZE_UNIT, true, MSG_CONFIRM, validReset);
+                    IS_VCHK = true;
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
+        const radios = document.getElementsByName('durationStress');
+        radios.forEach(radio => {
+            radio.addEventListener('change', noMetricsForShortRun);
+        });
+        function noMetricsForShortRun() {
+            let selectedValue = null;
+            for (const radio of radios) {
+                if (radio.checked) {
+                    selectedValue = radio.value;
+                    break;
+                }
+            }
+            const durationValue = document.getElementById('durationStress').value;
+
+            if(selectedValue === 's') {
+                if(durationValue < 30){
+                    func.alertPopup('NOTE', MSG_NO_METRIC_LESS_30SECONDS, true, MSG_CONFIRM, noMetricsForShortRun);
+                }
+            }
+            if(selectedValue === 'ms') {
+                if(durationValue < 30000){
+                    func.alertPopup('NOTE', MSG_NO_METRIC_LESS_30SECONDS, true, MSG_CONFIRM, noMetricsForShortRun);
+                }
+
+            }
+
+        }
+
+        function radioCheck(name) {
+            let checkRadio = document.getElementsByName(name);
+            let cnt = 0;
+            for (let i = 0; i < checkRadio.length; i++) {
+                if (checkRadio[i].checked) {
+                    return cnt;
+                }
+                cnt++;
+            }
+        }
+
+        function selectPod() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    const checkedCount = Array.from(checkboxes).filter(i => i.checked).length;
+
+                    if (checkedCount > 6) {
+                        checkbox.checked = false;
+                        func.alertPopup('ERROR', MSG_OVER_SELECTED_PODS, true, MSG_CONFIRM, selectPod);
+                    }
+                });
+            });
+        }
+
+
+        function save() {
+            let fault = document.querySelector('.tab-btn li.active').getAttribute('type');
+            let name = document.getElementsByClassName('name')[tabIndex].value;
+            let chaosNamespace = document.getElementsByClassName('chaosNamespace')[tabIndex].value;
+            let namespaces = [document.getElementsByClassName('namespaceSelect')[tabIndex].value];
+            let labelSelector = document.getElementsByClassName('labelSelect')[tabIndex].value;
+            let labelSelectors = {};
+            const labelSelectorKey = labelSelector.split(':')[0];
+            const labelSelectorValue = labelSelector.split(':')[1];
+            if (labelSelectors === 'all') {
+                labelSelectors = null;
+            } else {
+                labelSelectors[labelSelectorKey] = labelSelectorValue;
+            }
+            gracePeriod = document.getElementById('gracePeriod').value;
+            let durationRadios;
+            let selectedDurationValue;
+            let duration;
+            if (fault === 'networkAttack') {
+                durationRadios = document.querySelectorAll('.durationNetworkRadio');
+                durationRadios.forEach(radio => {
+                    if (radio.checked) {
+                        selectedDurationValue = radio.value;
+                    }
+                });
+                if (!isEmpty(document.getElementById('durationNetwork').value)) {
+                    duration = document.getElementById('durationNetwork').value + selectedDurationValue;
+                }
+            } else if (fault === 'stressTest') {
+                durationRadios = document.querySelectorAll('.durationStressRadio');
+                durationRadios.forEach(radio => {
+                    if (radio.checked) {
+                        selectedDurationValue = radio.value;
+                    }
+                });
+                if (!isEmpty(document.getElementById('durationStress').value)) {
+                    duration = document.getElementById('durationStress').value + selectedDurationValue;
+                }
+            }
+            const latencyRadios = document.querySelectorAll('.latencyRadio');
+            let selectedLatencyValue;
+            latencyRadios.forEach(radio => {
+                if (radio.checked) {
+                    selectedLatencyValue = radio.value;
+                }
+            });
+            let latency = document.getElementById('latency').value + selectedLatencyValue;
+            let stressors = {};
+            let cpu;
+            let memory;
+            let memorySize;
+            let selectedMemorySizeValue;
+            const memorySizeRadios = document.querySelectorAll('.memorySizeRadio');
+            memorySizeRadios.forEach(radio => {
+                if (radio.checked) {
+                    selectedMemorySizeValue = radio.value;
+                }
+            });
+            memorySize = document.getElementById('memorySize').value + selectedMemorySizeValue;
+
+            if (!isEmpty(document.getElementById("cpuWorkers").value)) {
+                if (!isEmpty(document.getElementById("cpuLoad").value)) {
+                    cpu = {
+                        "workers": document.getElementById("cpuWorkers").value,
+                        "load": document.getElementById("cpuLoad").value
+                    }
+                } else {
+                    cpu = {
+                        "workers": document.getElementById("cpuWorkers").value
+                    }
+                }
+                stressors.cpu = cpu;
+            }
+            if (!isEmpty(document.getElementById("memoryWorkers").value)) {
+                if (!isEmpty(document.getElementById("memorySize").value)) {
+                    memory = {
+                        "workers": document.getElementById("memoryWorkers").value,
+                        "size": memorySize
+                    }
+                } else {
+                    memory = {
+                        "workers": document.getElementById("memoryWorkers").value
+                    }
+                }
+                stressors.memory = memory;
+            }
+
+            let cluster = sessionStorage.getItem('cluster');
+            let namespace = chaosNamespace;
+
+            if (validCheck(fault)) {
+                const checkedPod = document.querySelectorAll('input[name="checkboxPod"]:checked');
+                const pods = {
+                    [namespaces[0]]: Array.from(checkedPod).map(pod => pod.value)
+                };
+
+                const podFault = {
+                    kind: 'PodChaos',
+                    action: 'pod-kill',
+                    cluster,
+                    namespace,
+                    name,
+                    chaosNamespace,
+                    namespaces,
+                    labelSelectors,
+                    pods,
+                    gracePeriod
+                }
+                const networkAttack = {
+                    kind: 'NetworkChaos',
+                    action: 'delay',
+                    cluster,
+                    namespace,
+                    name,
+                    chaosNamespace,
+                    namespaces,
+                    labelSelectors,
+                    pods,
+                    duration,
+                    latency
+                }
+                const stressTest = {
+                    kind: 'StressChaos',
+                    cluster,
+                    namespace,
+                    name,
+                    chaosNamespace,
+                    namespaces,
+                    labelSelectors,
+                    pods,
+                    duration,
+                    stressors
+                }
+
+                let obj = fault === 'podFault' ? podFault : fault === 'networkAttack' ? networkAttack : stressTest;
+                func.saveData('POST', `${func.chaosUrl}clusters/${sessionStorage.getItem('cluster')}/namespaces/${namespaces}/experiments`, JSON.stringify(obj), true, 'application/json', saveComp);
+            }
+        }
+
+        function saveComp() {
+            document.location.href = "/container-platform/experiments"
+        }
+
+    </script>
+</th:block>
+</html>

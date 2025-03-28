@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+
+<div layout:fragment="content">
+    <div id="content" class="sub-page clusters">
+        <article class="location">
+            <ul>
+                <li><a onclick="movePage(URI_CP_CATALOG_REPOSITORIES)">Catalogs</a></li>
+                <li><a onclick="movePage(URI_CP_CATALOG_REPOSITORIES)">Repositories</a></li>
+            </ul>
+        </article>
+        <article class="base">
+            <div class="creat">
+                <h3 th:text="|Repository #{M0223}|"></h3>
+                <div>
+                    <dl>
+                        <dt><label for="name">Name</label></dt>
+                        <dd>
+                            <input id="name" type="text" th:placeholder="#{M0852}"/>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt><label for="url">URL</label></dt>
+                        <dd>
+                            <input id="url" type="text" th:placeholder="#{M0853}"/>
+                        </dd>
+                    </dl>
+                    <dl style="display: flex;">
+                        <label class="container">Authentication
+                            <input type="checkbox" id="repo-add-auth-checkbox">
+                            <span class="checkmark"></span>
+                        </label>
+                        <label class="container">TLS Verification
+                            <input type="checkbox" id="repo-add-tls-checkbox">
+                            <span class="checkmark"></span>
+                        </label>
+                    </dl>
+                    <dl id="repo-add-auth-dl" style="display: none;">
+                        <div style="display: flex">
+                         <div style="width:50%;">
+                           <dt><label for="username">Username</label></dt>
+                            <dd><input id="username" type="text" th:placeholder="#{M0854}"/></dd>
+                         </div>
+                         <div style="width:50%;">
+                          <dt><label for="password">Password</label></dt>
+                          <dd><input id="password" type="password" th:placeholder="#{M0855}"/></dd>
+                         </div>
+                        </div>
+                    </dl>
+                    <dl id="repo-add-tls-dl" style="display: none;">
+                        <dt><label for="ca_cert">CA Certificate</label></dt>
+                        <dd>
+                            <textarea id="ca_cert" name="ca_cert" rows="20" placeholder="-----BEGIN CERTIFICATE-----&#10;.....&#10;-----END CERTIFICATE-----"></textarea>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+            <!-- btn -->
+            <div class="btn02">
+                <button onclick="historyBack()" th:text="#{M0028}"></button>
+                <div>
+                    <button type="submit" id="add" th:text="#{M0223}"></button>
+                </div>
+            </div>
+        </article>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+        window.onload = () => {
+            func.init(ASIDE_DP1.CATALOGS, ASIDE_DP2.CATALOG_REPOSITORIES);
+            const addRepo = {
+                draw(){
+                    addRepo.event();
+                },
+                event(){
+                    document.getElementById('repo-add-auth-checkbox').addEventListener('click', (e) => {
+                        if (e.currentTarget.checked) {
+                            document.getElementById('repo-add-auth-dl').style.display="";
+                        } else {
+                            document.getElementById('repo-add-auth-dl').style.display="none";
+                        }
+                    }, false);
+                    document.getElementById('repo-add-tls-checkbox').addEventListener('click', (e) => {
+                        if (e.currentTarget.checked) {
+                            document.getElementById('repo-add-tls-dl').style.display="";
+                        } else {
+                            document.getElementById('repo-add-tls-dl').style.display="none";
+                        }
+                    }, false);
+
+                    document.getElementById('add').addEventListener('click', (e) => {
+                        let auth_checkbox = document.getElementById('repo-add-auth-checkbox');
+                        let tls_checkbox = document.getElementById('repo-add-tls-checkbox');
+                        let username = (auth_checkbox.checked) ? document.getElementById("username").value : "" ;
+                        let password = (auth_checkbox.checked) ? document.getElementById("password").value : "" ;
+                        let ca_base64 = (tls_checkbox.checked) ? btoa(document.getElementById("ca_cert").value) : "" ;
+
+                        (document.getElementById('repo-add-auth-checkbox'))
+                        let sendData = {
+                            "name" :document.getElementById("name").value.trim(),
+                            "url" : document.getElementById("url").value.trim(),
+                            "username" : username,
+                            "password" : password,
+                            "ca_base64" : ca_base64,
+                        };
+                      func.saveData('POST', `${func.catalogUrl}/api/repositories`, JSON.stringify(sendData), true, 'application/json', addRepo.moveRepoList);
+                    }, false);
+                },
+                moveRepoList() {
+                    movePage(URI_CP_CATALOG_REPOSITORIES);
+                }
+
+            }
+
+            addRepo.draw();
+        }
+    </script>
+    <script>
+
+    </script>
+</th:block>
+</html>

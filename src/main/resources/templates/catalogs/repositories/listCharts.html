@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<div layout:fragment="content">
+    <div id="content" class="sub-page">
+        <article class="location">
+            <ul>     <li><a onclick="movePage(URI_CP_CATALOG_REPOSITORIES)">Catalogs</a></li>
+                     <li><a onclick="movePage(URI_CP_CATALOG_REPOSITORIES)">Repositories</a></li>
+                     <li><a onclick="movePage(URI_CP_CATALOG_REPOSITORIES+URI_CP_CATALOG_CHARTS)">Charts</a></li>
+                </ul>
+            <!-- Click event class="on" -->
+            <fieldset>
+                    <input type="text" name="keyword" id="searchText" autocomplete="off" th:placeholder="#{M0017}" />
+                    <button type="submit" id="search" th:text="#{M0031}"></button>
+                </fieldset>
+        </article>
+            <article class="base">
+                <div class="notice">
+                        <h2 id="repo-name-header" style="text-overflow:ellipsis;width:70%;"></h2>
+                        <div class="header-label-wrapper"><span class="header-label" id="repo-url-header"></span></div>
+                    <!-- User -->
+                    <div class="table_style01 table_chart">
+                        <!-- board -->
+                        <table>
+                            <caption>Repositories</caption>
+                            <colgroup >
+                                <col width="5%" />
+                                <col width="16%" />
+                                <col width="64%" />
+                                <col width="15%" />
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th colspan="2" scope="col">Name</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Version</th>
+                            </tr>
+                            </thead>
+                            <tbody class="listTable">
+                            </tbody>
+                        </table>
+                        <!-- more btn -->
+                        <a class="more" href="javascript:;">more</a>
+                    </div>
+                    <!-- btn -->
+                    <a href="javascript:;" id="delete" class="aside_btn" th:text="#{M0026}"></a>
+                    <a href="javascript:;" id="update" class="aside_btn" style="right:39px; background-color: #0950bf;" th:text="#{M0032}"></a>
+                </div>
+        </article>
+    </div>
+</div>
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+    window.onload = () => {
+
+        func.init(ASIDE_DP1.CATALOGS, ASIDE_DP2.CATALOG_REPOSITORIES);
+        callbackFuncNameLoad();
+        let repoObj = JSON.parse(sessionStorage.getItem('repoItem'));
+
+        const charts = {
+            offset : 0, // 로드 페이지 넘버
+            limit : 10, // 로드 게시물 개수
+            allItemCount : 0, //게시물 총 개수
+            searchName : '',
+            repoName : repoObj.name,
+            repoUrl : repoObj.url,
+            allItems: [],
+            allItemsOrig: [],
+            pageItems: [],
+
+            init(){
+                func.nameLoad = charts.reset;
+                charts.load();
+                charts.event();
+            },
+
+            reset(){
+                func.removeHtml(document.querySelector('.listTable'));
+                charts.offset = 0;
+                if(IS_SEARCH) {
+                    charts.searchKeyword();
+                }
+                else {
+                    charts.load();
+                }
+            },
+
+            load(){
+                func.loading();
+                document.getElementById('searchText').value = "";
+                func.loadData('GET', `${func.catalogUrl}/api/repositories/${charts.repoName}/charts`, 'application/json', charts.initDraw);
+            },
+
+            initDraw(data){
+                document.getElementById("repo-name-header").innerText  = charts.repoName;
+                document.getElementById("repo-url-header").innerText  = charts.repoUrl;
+                if(data.httpStatusCode === 200){
+                    charts.allItems = data.items;
+                    charts.allItemsOrig = data.items;
+                    charts.allItemCount =  data.items.length;
+                    charts.draw();
+                } else {
+                    let html = '<tr><td colspan="4">No Data.</td></tr>';
+                    func.appendHtml(document.querySelector('.listTable'), html, 'tbody');
+                }
+
+                if(document.getElementById('loading')){
+                    document.getElementById('wrap').removeChild(document.getElementById('loading'));
+                }
+            },
+
+            draw(){
+                    let html = "";
+                    let icon = "";
+                    let begin = charts.offset * charts.limit;
+                    charts.pageItems = charts.allItems.slice(begin,begin+charts.limit);
+
+                    for(let i=0; i<charts.pageItems.length; i++) {
+                        let chart = charts.pageItems[i];
+                        let data_item = JSON.stringify({name:chart.name, repoName:chart.repoName, version:chart.version, icon:chart.icon});
+                        icon = (chart.icon.length < 1) ? DEFAULT_ICON_PATH : chart.icon;
+                        html += `<tr>` +
+                            `<td class="chart-td-first"><div class="chart-logo-wrap"><img class="chart-logo" src="${icon}" onerror="this.src='${DEFAULT_ICON_PATH}';"></div></td>` +
+                            `<td class="left chart-td-sec"><a href="javascript:;" data-item='${data_item}' data-name="${chart.name}">${chart.name}</a></td>` +
+                            `<td class="left">`;
+                        if(chart.deprecated) {html += `<span class="deprecated" title="This package is deprecated.">(Deprecated)</span>`;}
+                        html += `${chart.description}</td>` +
+                            `<td class="center box"><div class="label-center-wrapper"><dl><dt>${chart.version}</dt></dl></div></td>`;
+                    }
+
+                    if(html.length < 1) {
+                        html = '<tr><td colspan="4">No Data.</td></tr>';
+                    }
+                    func.appendHtml(document.querySelector('.listTable'), html, 'tbody');
+
+                charts.listEvent();
+                // more 버튼 활성, 비활성
+                if(document.querySelector('.listTable').querySelectorAll('tr').length < charts.allItemCount){
+                    document.querySelector('.more').classList.toggle('on', true);
+                } else {
+                    document.querySelector('.more').classList.toggle('on', false);
+                }
+            },
+
+            event(){
+                // more 버튼 event
+                document.querySelector('.more').addEventListener('click', (e) => {
+                    if(document.querySelector('.listTable').querySelectorAll('tr').length < charts.allItemCount){
+                    charts.offset++;
+                    func.loading();
+                    charts.draw();
+                    if(document.getElementById('loading')){
+                        document.getElementById('wrap').removeChild(document.getElementById('loading'));
+                    }
+                 }
+            }, false);
+
+                // delete 버튼 event
+                document.getElementById('delete').addEventListener('click', (e) => {
+                    func.alertPopup('DELETE', MSG_CHECK_TO_DELETE, true, MSG_CONFIRM, charts.delete);
+                }, false);
+                // update 버튼 event
+                document.getElementById('update').addEventListener('click', (e) => {
+                    func.alertPopup('UPDATE', MSG_REPO_CHART_UPDATE, true, MSG_CONFIRM, charts.update);
+                }, false);
+            },
+
+            listEvent(){
+                var listAll = document.querySelector('.listTable').querySelectorAll('a');
+
+                for(var i=charts.offset*10; i<=listAll.length-1; i++){
+                    listAll[i].addEventListener('click', (e) => {
+                    sessionStorage.setItem('chartItem', e.target.getAttribute('data-item'));
+                    document.location.href = URI_CP_CATALOG_REPOSITORIES + URI_CP_CATALOG_CHARTS + URI_CP_CATALOG_INSTALL;
+                }, true);
+                };
+            },
+
+            delete(){
+                func.saveData('DELETE', `${func.catalogUrl}/api/repositories/${charts.repoName}`, '', true, 'application/json', charts.moveRepoList);
+            },
+
+            update(){
+                func.saveData('PUT', `${func.catalogUrl}/api/repositories/${charts.repoName}`, '', true, 'application/json', charts.moveChartList);
+            },
+
+            moveChartList() {
+                movePage(URI_CP_CATALOG_REPOSITORIES+URI_CP_CATALOG_CHARTS);
+            },
+
+            moveRepoList() {
+                movePage(URI_CP_CATALOG_REPOSITORIES);
+            },
+
+            searchKeyword() {
+                func.loading();
+
+                let keyword = document.getElementById('searchText').value.trim();
+                let searchList = [];
+
+                if(keyword.length < 1) {
+                    searchList = charts.allItemsOrig;
+                }
+                else {
+                    for (let el of charts.allItemsOrig) {
+                        if (el.name.indexOf(keyword) !== -1) {
+                            searchList.push(el);
+                        }
+                    }
+                }
+                charts.allItems = searchList;
+                charts.allItemCount = searchList.length;
+
+                charts.draw();
+                IS_SEARCH = false;
+                if(document.getElementById('loading')){
+                    document.getElementById('wrap').removeChild(document.getElementById('loading'));
+                }
+            }
+        }
+
+        charts.init();
+    }
+</script>
+</th:block>
+</html>

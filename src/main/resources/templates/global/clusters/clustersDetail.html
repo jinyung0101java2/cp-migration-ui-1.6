@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<div layout:fragment="content">
+    <div id="content" class="sub-page">
+        <article class="location">
+            <ul>
+                <li><a onclick="movePage(URI_CP_BASE_URL)">Global</a></li>
+                <li><a onclick="movePage(URI_CP_GLOBAL_CLUSTER)">Clusters</a></li>
+            </ul>
+        </article>
+        <article class="base detail">
+            <div class="notice">
+                <h4>Details</h4>
+                <div class="table_style01">
+                    <table>
+                        <caption>Details</caption>
+                        <colgroup >
+                            <col width="20%" />
+                            <col width="80%" />
+                        </colgroup>
+                        <tbody class="listTable">
+                        <tr>
+                            <th scope="row" class="left">Name</th>
+                            <td class="left">
+                                <input class="left" id="clusterDetailName" type="text" readonly>
+                                <button type="button" class="right" id="clusterDetailNameButton" onclick="activeEdit('clusterDetailName', this.id)" sec:authorize="hasAuthority('SUPER_ADMIN')">Edit</button>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <th scope="row" class="left">Provider</th>
+                            <td class="left">
+                                <input class="left" id="clusterDetailProvider" type="text" readonly>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="left">Kubernetes Version</th>
+                            <td class="left">
+                                <input class="left" id="clusterDetailVersion" type="text" readonly>
+                            </td>
+                        </tr>
+<!--                        <tr>-->
+<!--                            <th scope="row" class="left">Region</th>-->
+<!--                            <td class="left">-->
+<!--                                <input class="left" id="clusterDetailRegion" type="text" readonly>-->
+<!--                            </td>-->
+<!--                        </tr>-->
+                        <tr>
+                            <th scope="row" class="left">Kubernetes API Server</th>
+                            <td class="left">
+                                <input class="left" id="clusterDetailIP" type="text" readonly>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="left">Description</th>
+                            <td class="left">
+                                <input class="left" id="clusterDetailDescription" type="text" readonly>
+                                <button type="button" class="right" id="clusterDetailDescriptionButton" onclick="activeEdit('clusterDetailDescription', this.id)" sec:authorize="hasAuthority('SUPER_ADMIN')">Edit</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="left">Cluster CA Certification</th>
+                            <td class="left">
+                                <input class="left" id="clusterDetailCertification" type="text">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="left">Created</th>
+                            <td class="left">
+                                <input class="left" id="clusterDetailCreated" type="text" readonly>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- btn -->
+            <div class="btn02">
+                <button type="submit" id="delete" th:text="#{M0849}" sec:authorize="hasAuthority('SUPER_ADMIN')" style="display:none"></button>
+                <div>
+                    <a href="javascript:" id="modify" data-role="clusters" th:text="#{M0025}" sec:authorize="hasAuthority('SUPER_ADMIN')"></a>
+                    <a onclick="movePage(URI_CP_GLOBAL_CLUSTER)" th:text="#{M0028}"></a>
+                </div>
+            </div>
+        </article>
+    </div>
+    <input type="hidden" id="msg_disconnect_cluster" th:value="#{M0850}"/>
+</div>
+
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+        window.onload = () => {
+
+            var MSG_CHECK_DISCONNECT_CLUSTER = document.getElementById('msg_disconnect_cluster').value;
+            IS_GLOBAL = true;
+            func.init(ASIDE_DP1.GLOBAL, ASIDE_DP2.CLUSTERS);
+            let isHide = false;
+            let clusterInfo = '';
+            var clusterId = '';
+
+
+            const clusterDetail = {
+
+                init(){
+                    clusterDetail.load();
+                    clusterDetail.event();
+                },
+
+                load() {
+                    func.loading();
+                    func.loadData('GET', `${func.url}clusters/${sessionStorage.getItem('commonName')}`, 'application/json', clusterDetail.draw);
+                },
+
+                draw(data){
+
+                    // Details data
+                    clusterInfo = data;
+                    clusterDetail.enableDiscon(data.clusterType);
+                    clusterId = data.clusterId;
+                    document.getElementById('clusterDetailName').value = data.name;
+                    document.getElementById('clusterDetailProvider').value = data.providerType;
+                    document.getElementById('clusterDetailVersion').value = data.kubernetesVersion;
+                    document.getElementById('clusterDetailIP').value = data.clusterApiUrl;
+                    document.getElementById('clusterDetailCreated').value = data.created;
+                    document.getElementById('clusterDetailDescription').value = data.description;
+
+                    if(document.getElementById('loading')){
+                        document.getElementById('wrap').removeChild(document.getElementById('loading'));
+                    }
+                },
+
+                event(){
+                    switchCA();
+
+                    if(document.getElementById('delete')) {
+                     document.getElementById('delete').addEventListener('click', () => {
+                        func.alertPopup('DISCONNECT', MSG_CHECK_DISCONNECT_CLUSTER, true, MSG_CONFIRM, clusterDetail.delete);
+                    }, false); }
+
+                    if(document.getElementById('modify')) {
+                    document.getElementById('modify').addEventListener('click', () => {
+                        func.alertPopup('MODIFY', MSG_CHECK_TO_SAVE, true, MSG_CONFIRM, clusterDetail.modify);
+                    }, false); }
+                },
+
+                modify() {
+                    let updateAccount;
+                    updateAccount = {
+                        "cluster": sessionStorage.getItem('commonName'),
+                        "resourceName": document.getElementById('clusterDetailName').value,
+                        // "clusterApiUrl": clusterInfo.clusterApiUrl,
+                        // "providerType": clusterInfo.providerType,
+                        // "clusterToken": clusterInfo.clusterToken,
+                        // "clusterType": clusterInfo.clusterType,
+                        "description": document.getElementById('clusterDetailDescription').value
+                    };
+                    func.saveData('PATCH', `${func.url}clusters`, JSON.stringify(updateAccount), true, 'application/json', func.refresh);
+                },
+
+                moveLIstPage() {
+                    document.location.href = URI_CP_GLOBAL_CLUSTER;
+                },
+
+                delete(){
+                    func.saveData('DELETE', `${func.url}clusters/${clusterId}`, '', true, 'application/json', clusterDetail.moveLIstPage);
+                },
+
+               enableDiscon(type){
+                    if(document.getElementById('delete')) {
+                        if(type.toLowerCase() == 'host') {
+                            document.getElementById('delete').remove();}
+                        else{
+                            document.getElementById('delete').style.display ="";}
+                        }
+               }
+            };
+
+            clusterDetail.init();
+
+            function switchCA() {
+                isHide = !isHide;
+                if (isHide) {
+                    document.getElementById('clusterDetailCertification').value = MASKED_DATA;
+                } else {
+                    document.getElementById('clusterDetailCertification').value = clusterInfo.clusterToken;
+                }
+            }
+        }
+
+    </script>
+</th:block>
+</html>
