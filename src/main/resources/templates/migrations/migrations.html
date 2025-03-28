@@ -6,10 +6,6 @@
 <div layout:fragment="content">
     <div id="content" class="sub-page">
         <article class="location">
-            <fieldset>
-                <input type="text" name="keyword" id="searchText" autocomplete="off" th:placeholder="#{M0017}" />
-                <button type="submit" id="search" th:text="#{M0031}"></button>
-            </fieldset>
         </article>
         <article class="base tab-cont-wrap">
             <ul class="tab-btn">
@@ -22,17 +18,19 @@
                     <div class="table_style01">
                         <!-- board -->
                         <table>
-                            <caption>Configmap List</caption>
+                            <caption>Migrations List</caption>
                             <colgroup >
-                                <col width="35%" />
-                                <col width="35%" />
-                                <col width="30%" />
+                                <col width="25%" />
+                                <col width="25%" />
+                                <col width="25%" />
+                                <col width="25%" />
                             </colgroup>
                             <thead>
                             <tr>
                                 <th scope="col">Name</th>
-                                <th scope="col">Namespaces</th>
-                                <th scope="col">Created Time</th>
+                                <th scope="col">Objects</th>
+                                <th scope="col">Size</th>
+                                <th scope="col">Access</th>
                             </tr>
                             </thead>
                             <tbody class="listTable">
@@ -79,7 +77,7 @@
                 func.loading();
 
                 // nameSpace 정보 조회
-                func.loadData('GET', `${func.url}clusters/${sessionStorage.getItem('cluster')}/namespaces/${sessionStorage.getItem('nameSpace')}/configMaps?searchName=${document.getElementById('searchText').value}&limit=${migrations.limit}&offset=${migrations.offset}`, 'application/json', migrations.draw);
+                func.loadData('GET', `${func.url}clusters/${sessionStorage.getItem('cluster')}/namespaces/${sessionStorage.getItem('nameSpace')}/configMaps`, 'application/json', migrations.draw);
             },
 
             draw(data){
@@ -88,7 +86,7 @@
                 if(data.httpStatusCode == 200){
                     if(data.items.length > 0){
                         for(var i=0; i<=data.items.length-1; i++){
-                            var html = `<tr><td class="left"><a href="javascript:;" data-name="${data.items[i].name}" data-spac="${data.items[i].namespace}">${data.items[i].name}</a></td><td class="left">${data.items[i].namespace}</td><td>${data.items[i].creationTimestamp}</td></tr>`;
+                            var html = `<tr><td class="left"><a href="javascript:;" data-name="${data.items[i].name}" data-spac="${data.items[i].namespace}">${data.items[i].name}</a></td><td class="left">${data.items[i].namespace}</td><td>${data.items[i].creationTimestamp}</td><td>R/W</td></tr>`;
 
                             func.appendHtml(document.querySelector('.listTable'), html, 'tbody');
                         };

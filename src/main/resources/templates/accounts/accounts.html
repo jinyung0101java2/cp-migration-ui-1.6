@@ -6,10 +6,6 @@
 <div layout:fragment="content">
     <div id="content" class="sub-page">
         <article class="location">
-            <fieldset>
-                <input type="text" name="keyword" id="searchText" autocomplete="off" th:placeholder="#{M0017}" />
-                <button type="submit" id="search" th:text="#{M0031}"></button>
-            </fieldset>
         </article>
         <article class="base tab-cont-wrap">
             <ul class="tab-btn">
@@ -79,7 +75,7 @@
                 func.loading();
 
                 // nameSpace 정보 조회
-                func.loadData('GET', `${func.url}clusters/${sessionStorage.getItem('cluster')}/namespaces/${sessionStorage.getItem('nameSpace')}/configMaps?searchName=${document.getElementById('searchText').value}&limit=${accounts.limit}&offset=${accounts.offset}`, 'application/json', accounts.draw);
+                func.loadData('GET', `${func.url}clusters/${sessionStorage.getItem('cluster')}/namespaces/${sessionStorage.getItem('nameSpace')}/configMaps`, 'application/json', accounts.draw);
             },
 
             //draw(data){
