@@ -8,13 +8,13 @@
                 <a href="javascript:" class="dep01">Global</a>
                 <ul class="sub">
                     <li><a onclick="movePage(URI_CP_BASE_URL)" aside_d2="g_overview">Overview</a></li>
-                    <li><a onclick="movePage(URI_CP_GLOBAL_CLUSTER)" aside_d2="clusters">Clusters</a></li>
+                   <!-- <li><a onclick="movePage(URI_CP_GLOBAL_CLUSTER)" aside_d2="clusters">Clusters</a></li>
                     <li><a onclick="movePage(URI_CP_GLOBAL_CLOUD_ACCOUNTS)" aside_d2="cloud_account">Cloud Accounts</a></li>
                     <li><a onclick="movePage(URI_CP_GLOBAL_INSTANCE_CODE_TEMPLATES)" aside_d2="instance_code_template">Instance Code Template</a></li>
-                    <li><a onclick="movePage(URI_CP_GLOBAL_SSH_KEYS)" aside_d2="ssh_keys">SSH Keys</a></li>
+                    <li><a onclick="movePage(URI_CP_GLOBAL_SSH_KEYS)" aside_d2="ssh_keys">SSH Keys</a></li>-->
                 </ul>
             </li>
-            <li class="plus" aside_d1="clusters">
+           <!-- <li class="plus" aside_d1="clusters">
                 <a href="javascript:" class="dep01">Clusters</a>
                 <ul class="sub">
                     <li><a onclick="movePage(URI_CP_INDEX_URL)" aside_d2="c_overview">Overview</a></li>
@@ -82,7 +82,7 @@
                     <li><a onclick="movePage(URI_CP_INFO_ACCESS)" aside_d2="access">Access</a></li>
                     <li><a onclick="movePage(URI_CP_INFO_PRIVATE_REPOSITORY)" aside_d2="private_repository">Private Repository</a></li>
                 </ul>
-            </li>
+            </li>-->
             <li class="plus" aside_d1="migrations">
                 <a href="javascript:" class="dep01">Migrations</a>
                 <ul class="sub">
@@ -95,7 +95,7 @@
 </aside>
 
 <aside th:fragment="globalAsideFragment">
-    <nav>
+   <!-- <nav>
         <ul>
             <li>
                 <a href="#none" class="dep01">Global</a>
@@ -109,6 +109,22 @@
                     <li><a onclick="movePage(URI_CP_GLOBAL_CLOUD_ACCOUNTS)">Cloud Accounts</a></li>
                     <li><a onclick="movePage(URI_CP_GLOBAL_INSTANCE_CODE_TEMPLATES)">Instance Code Template</a></li>
                     <li><a onclick="movePage(URI_CP_GLOBAL_SSH_KEYS)">SSH Keys</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>-->
+    <nav>
+        <ul>
+            <li>
+                <a href="#none" class="dep01">Migrations</a>
+                <ul class="sub">
+                </ul>
+            </li>
+            <li class="plus">
+                <a href="javascript:" class="dep01">Migrations</a>
+                <ul class="sub">
+                    <li><a onclick="movePage(URI_CP_ACCOUNTS_LIST)" >Accounts</a></li>
+                    <li><a onclick="movePage(URI_CP_MIGRATIONS_LIST)" >Migrations</a></li>
                 </ul>
             </li>
         </ul>
