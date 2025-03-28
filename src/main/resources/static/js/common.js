@@ -13,41 +13,9 @@ const func = {
 	depth2 : '',
 
 	init(depth1, depth2){
-		/*func.depth1 = depth1;
-		func.depth2 = depth2;*/
 
 		// Locale Language 조회
 		func.getLocaleLang();
-
-		if(IS_GLOBAL == false) {
-			func.loadData('GET', `${func.url}users/clustersList?isGlobal=${IS_GLOBAL}`, 'application/json', func.clusters);
-		}
-		else {
-			document.getElementById('clusterTitleDiv').style.display="none";
-			document.getElementById('nameSpaceTitleDiv').style.display="none";
-
-			if(sessionStorage.getItem('cluster') == null) {
-				func.loadData('GET', `${func.url}users/clustersList?isGlobal=${IS_GLOBAL}`, 'application/json', func.clusters);
-			}
-		}
-
-
-		// navigation 초기 선택 설정
-		if(depth1.length >= 0){
-			//depth1 toggle on
-			document.querySelector('[aside_d1='+depth1+']').classList.toggle('on', true);
-			// depth2 toggle on
-			document.querySelector('[aside_d2='+depth2+']').classList.toggle('on', true);
-
-		}
-
-		// navigation height 설정
-		var navSub = document.querySelector('nav').querySelectorAll('.sub');
-		for(var i=0; i<=navSub.length-1; i++){
-			var childSum = navSub[i].childElementCount;
-			navSub[i].style.height = (childSum*35+30)+((childSum-1)*10)+'px';
-		};
-
 		func.event();
 	},
 
