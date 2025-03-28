@@ -41,7 +41,7 @@ public class IntroOverviewController {
     public Object baseView() {
         UsersLoginMetaData usersLoginMetaData = loginService.getAuthenticationUserMetaData();
         if (Constants.AUTH_ADMIN_LIST.contains(usersLoginMetaData.getUserType())) {
-            return "global/overview";
+            return "migrations/migrations";
         }
 
         return "index";

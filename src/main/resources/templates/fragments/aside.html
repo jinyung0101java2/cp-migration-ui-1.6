@@ -4,12 +4,6 @@
 <aside th:fragment="asideFragment">
     <nav>
         <ul>
-            <li class="plus" aside_d1="global" sec:authorize="hasAnyAuthority('SUPER_ADMIN', 'CLUSTER_ADMIN')">
-                <a href="javascript:" class="dep01">Global</a>
-                <ul class="sub">
-                    <li><a onclick="movePage(URI_CP_BASE_URL)" aside_d2="g_overview">Overview</a></li>
-                </ul>
-            </li>
             <li class="plus" aside_d1="migrations">
                 <a href="javascript:" class="dep01">Migrations</a>
                 <ul class="sub">
@@ -22,24 +16,6 @@
 </aside>
 
 <aside th:fragment="globalAsideFragment">
-   <!-- <nav>
-        <ul>
-            <li>
-                <a href="#none" class="dep01">Global</a>
-                <ul class="sub">
-                </ul>
-            </li>
-            <li class="plus">
-                <a href="javascript:" class="dep01">Management</a>
-                <ul class="sub">
-                    <li><a onclick="movePage(URI_CP_GLOBAL_CLUSTER)">Clusters</a></li>
-                    <li><a onclick="movePage(URI_CP_GLOBAL_CLOUD_ACCOUNTS)">Cloud Accounts</a></li>
-                    <li><a onclick="movePage(URI_CP_GLOBAL_INSTANCE_CODE_TEMPLATES)">Instance Code Template</a></li>
-                    <li><a onclick="movePage(URI_CP_GLOBAL_SSH_KEYS)">SSH Keys</a></li>
-                </ul>
-            </li>
-        </ul>
-    </nav>-->
     <nav>
         <ul>
             <li>
